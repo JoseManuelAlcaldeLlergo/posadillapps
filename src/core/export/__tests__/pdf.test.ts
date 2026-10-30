@@ -56,6 +56,26 @@ describe('buildPdfHtml', () => {
     expect(html).toContain('<col style="width:14.29%">');
   });
 
+  it('has no heading row by default', () => {
+    expect(html).not.toContain('class="heading"');
+  });
+
+  it('prints the heading inside thead, spanning all columns, so it repeats on every page', () => {
+    const withHeading = buildPdfHtml(
+      { ...sampleTable, heading: ['PLAN DE EJEMPLO', '(Control <de> prueba)'] },
+      sampleRows,
+    );
+    expect(withHeading).toContain(
+      '<thead><tr><th class="heading" colspan="4">PLAN DE EJEMPLO<br>(Control &lt;de&gt; prueba)</th></tr><tr><th>FECHA</th>',
+    );
+    expect(withHeading).toContain('th.heading { border: none;');
+  });
+
+  it('formats dates with the table date separator', () => {
+    const rows = bodyRows(buildPdfHtml({ ...sampleTable, dateSeparator: '/' }, sampleRows));
+    expect(rows[0]).toContain('<td class="center">31/01/2025</td>');
+  });
+
   it('renders only the header when there are no rows', () => {
     const empty = buildPdfHtml(sampleTable, []);
     expect(empty).toContain('<th>FECHA</th>');

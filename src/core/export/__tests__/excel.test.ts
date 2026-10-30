@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 
-import { buildXlsxBase64, excelDateSerial, quantityNumberFormat } from '../excel';
+import { buildXlsxBase64, excelDateFormat, excelDateSerial, quantityNumberFormat } from '../excel';
 import { sampleRows, sampleTable } from './fixtures/sampleTable';
 
 function readBack(base64: string): XLSX.WorkSheet {
@@ -13,6 +13,14 @@ describe('excelDateSerial', () => {
     expect(excelDateSerial('1900-03-01')).toBe(61);
     expect(excelDateSerial('2025-01-31')).toBe(45688);
     expect(excelDateSerial('2025-03-31')).toBe(45747);
+  });
+});
+
+describe('excelDateFormat', () => {
+  it('uses dashes by default and escapes slashes', () => {
+    expect(excelDateFormat()).toBe('dd-mm-yyyy');
+    expect(excelDateFormat('-')).toBe('dd-mm-yyyy');
+    expect(excelDateFormat('/')).toBe('dd\\/mm\\/yyyy');
   });
 });
 
@@ -67,5 +75,38 @@ describe('buildXlsxBase64', () => {
     const empty = readBack(buildXlsxBase64(sampleTable, []));
     expect(empty['!ref']).toBe('A1:D1');
     expect(empty.A1.v).toBe('FECHA');
+  });
+
+  it('has no heading or merges by default, with the autofilter on the header row', () => {
+    expect(sheet['!merges']).toBeUndefined();
+    expect(sheet['!autofilter']?.ref).toBe('A1:D4');
+  });
+
+  describe('with a heading', () => {
+    const withHeading = readBack(
+      buildXlsxBase64({ ...sampleTable, heading: ['PLAN DE EJEMPLO', '(Control de prueba)'] }, sampleRows),
+    );
+
+    it('writes heading lines merged across all columns', () => {
+      expect(withHeading.A1.v).toBe('PLAN DE EJEMPLO');
+      expect(withHeading.A2.v).toBe('(Control de prueba)');
+      expect(withHeading['!merges']).toEqual([
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } },
+      ]);
+    });
+
+    it('moves the header row, the data and the autofilter below the heading', () => {
+      expect(withHeading.A3.v).toBe('FECHA');
+      expect(withHeading.A4.v).toBe(45688);
+      expect(withHeading['!ref']).toBe('A1:D6');
+      expect(withHeading['!autofilter']?.ref).toBe('A3:D6');
+    });
+  });
+
+  it('formats dates with the table date separator', () => {
+    const slashed = readBack(buildXlsxBase64({ ...sampleTable, dateSeparator: '/' }, sampleRows));
+    expect(slashed.A2.v).toBe(45688);
+    expect(slashed.A2.w).toBe('31/01/2025');
   });
 });

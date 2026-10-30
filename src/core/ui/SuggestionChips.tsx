@@ -1,31 +1,36 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Chip, ChipRow, spacing, useThemeColors } from '@/core/ui';
+import { nameKey } from '../text';
+import { Chip, ChipRow } from './Chip';
+import { spacing, useThemeColors } from './theme';
 
-import { nameKey } from '../names';
+type Suggestion = { id: number | string; name: string };
 
-type Props<T extends { id: number; name: string }> = {
+type Props<T extends Suggestion> = {
   items: readonly T[];
   /** Current text; filters suggestions and hides the exact match. */
   query: string;
   onSelect: (item: T) => void;
   label?: string;
   max?: number;
+  /** Comparison key for names and query. Defaults to `nameKey`. */
+  matchKey?: (text: string) => string;
 };
 
-/** Favorites matching what has been typed, as tappable chips. */
-export function SuggestionChips<T extends { id: number; name: string }>({
+/** Suggestions matching what has been typed, as tappable chips. */
+export function SuggestionChips<T extends Suggestion>({
   items,
   query,
   onSelect,
   label,
   max = 8,
+  matchKey = nameKey,
 }: Props<T>) {
   const colors = useThemeColors();
-  const key = nameKey(query);
+  const key = matchKey(query);
   const matches = items
     .filter((item) => {
-      const itemKey = nameKey(item.name);
+      const itemKey = matchKey(item.name);
       return itemKey !== key && itemKey.includes(key);
     })
     .slice(0, max);

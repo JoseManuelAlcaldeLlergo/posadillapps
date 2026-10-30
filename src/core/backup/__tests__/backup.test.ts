@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import { like } from 'drizzle-orm';
+import { like, sql } from 'drizzle-orm';
 
 import { createTestDb } from '../../db/testing/createTestDb';
 import type { SyncDatabase } from '../../db/types';
@@ -183,5 +183,70 @@ describe('restoreBackup', () => {
     expect(() => restoreBackup(db, contents, modules)).toThrow('boom');
     expect(getSetting(db, 'a:0')).toBe('se queda');
     expect(getSetting(db, 'b:0')).toBe('se queda');
+  });
+
+  describe('with a module referencing one registered after it', () => {
+    type Ids = number[];
+
+    /** Module whose rows live in its own table; `children` reference `parents`. */
+    function tableModule(id: 'parents' | 'children'): BackupParticipant {
+      return {
+        id,
+        title: id,
+        backup: defineModuleBackup<Ids>({
+          version: 1,
+          export: (db) =>
+            db.all<{ id: number }>(sql.raw(`select id from test_${id} order by id`)).map((r) => r.id),
+          parse: (data) => (data === undefined ? [] : (data as Ids)),
+          clear: (tx) => tx.run(sql.raw(`delete from test_${id}`)),
+          restore: (tx, ids) =>
+            ids.forEach((rowId) =>
+              tx.run(
+                id === 'parents'
+                  ? sql`insert into test_parents (id) values (${rowId})`
+                  : sql`insert into test_children (id, parent_id) values (${rowId}, ${rowId})`,
+              ),
+            ),
+          summary: (ids) => `${ids.length}`,
+        }),
+      };
+    }
+
+    // Children first: they are restored before the parents they reference.
+    const modules = [tableModule('children'), tableModule('parents')];
+
+    beforeEach(() => {
+      db.run(sql`create table test_parents (id integer primary key)`);
+      db.run(sql`create table test_children (
+        id integer primary key,
+        parent_id integer not null references test_parents(id)
+      )`);
+    });
+
+    function contentsWith(children: Ids, parents: Ids) {
+      return parseBackupFile(
+        serializeBackup({
+          app: 'posadillapps',
+          format: 1,
+          createdAt: '2026-01-01T00:00:00Z',
+          modules: { children: { version: 1, data: children }, parents: { version: 1, data: parents } },
+        }),
+        modules,
+      );
+    }
+
+    it('restores because foreign keys are checked at commit', () => {
+      restoreBackup(db, contentsWith([1, 2], [1, 2]), modules);
+      expect(createBackup(db, modules).modules).toEqual({
+        children: { version: 1, data: [1, 2] },
+        parents: { version: 1, data: [1, 2] },
+      });
+    });
+
+    it('still rejects broken references and changes nothing', () => {
+      restoreBackup(db, contentsWith([1], [1]), modules);
+      expect(() => restoreBackup(db, contentsWith([1, 2], [1]), modules)).toThrow(/FOREIGN KEY/);
+      expect(createBackup(db, modules).modules.children.data).toEqual([1]);
+    });
   });
 });

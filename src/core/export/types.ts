@@ -19,9 +19,17 @@ export type ColumnDefinition<Row> = {
 
 export type PageOrientation = 'portrait' | 'landscape';
 
+/** Separator between day, month and year when showing dates. */
+export type DateSeparator = '-' | '/';
+
 export type TableDefinition<Row> = {
   id: string;
+  /** Document title, sheet name and share dialog title; not printed. */
   title: string;
+  /** Lines printed above the table, as on the paper form. */
+  heading?: string[];
+  /** Defaults to `-` (`31-03-2025`). */
+  dateSeparator?: DateSeparator;
   /** Base for exported file names, without extension. */
   fileBaseName: string;
   orientation: PageOrientation;

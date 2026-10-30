@@ -7,5 +7,8 @@ export { DateField } from './DateField';
 export { DateRangeField, type OptionalDateRange } from './DateRangeField';
 export { ListItem } from './ListItem';
 export { Screen } from './Screen';
+export { SelectField, type SelectOption } from './SelectField';
+export { SuggestionChips } from './SuggestionChips';
+export { TableExportScreen } from './TableExportScreen';
 export { TextField } from './TextField';
 export { spacing, useThemeColors, type ThemeColors } from './theme';

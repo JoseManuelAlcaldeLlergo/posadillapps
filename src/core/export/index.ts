@@ -8,5 +8,5 @@ export {
   parseIsoDate,
 } from './format';
 export { buildPdfHtml, pageSize } from './pdf';
-export { buildWorkbook, buildXlsxBase64, excelDateSerial, XLSX_MIME_TYPE } from './excel';
+export { buildWorkbook, buildXlsxBase64, excelDateFormat, excelDateSerial, XLSX_MIME_TYPE } from './excel';
 export { printTable, sharePdf, shareXlsx } from './share';
