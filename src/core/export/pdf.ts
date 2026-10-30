@@ -11,10 +11,10 @@ export function pageSize(orientation: PageOrientation): { width: number; height:
 
 /**
  * Printable HTML for a table: A4, borders on every cell, bold centered
- * headers repeated on each page. Only the table, no letterhead.
+ * headers repeated on each page. The optional heading repeats too.
  */
 export function buildPdfHtml<Row>(definition: TableDefinition<Row>, rows: readonly Row[]): string {
-  const { columns } = definition;
+  const { columns, dateSeparator } = definition;
   const totalWidth = columns.reduce((sum, column) => sum + (column.width ?? DEFAULT_WIDTH), 0);
 
   const colgroup = columns
@@ -25,6 +25,12 @@ export function buildPdfHtml<Row>(definition: TableDefinition<Row>, rows: readon
     .join('');
 
   const header = columns.map((column) => `<th>${escapeHtml(column.header)}</th>`).join('');
+  // Inside thead so it repeats on every page, like the column headers.
+  const heading = definition.heading?.length
+    ? `<tr><th class="heading" colspan="${columns.length}">${definition.heading
+        .map(escapeHtml)
+        .join('<br>')}</th></tr>`
+    : '';
 
   const body = sortRows(definition, rows)
     .map((row) => {
@@ -32,7 +38,7 @@ export function buildPdfHtml<Row>(definition: TableDefinition<Row>, rows: readon
         .map((column) => {
           const cell = column.value(row);
           const align = cellAlign(column, cell);
-          return `<td class="${align}">${escapeHtml(formatCell(cell))}</td>`;
+          return `<td class="${align}">${escapeHtml(formatCell(cell, dateSeparator))}</td>`;
         })
         .join('');
       return `<tr>${cells}</tr>`;
@@ -53,6 +59,7 @@ thead { display: table-header-group; }
 tr { page-break-inside: avoid; break-inside: avoid; }
 th, td { border: 1px solid #000; padding: 4px 6px; overflow-wrap: anywhere; vertical-align: middle; }
 th { font-weight: bold; text-align: center; }
+th.heading { border: none; padding: 0 0 8px; font-size: 11pt; }
 td.left { text-align: left; }
 td.center { text-align: center; }
 td.right { text-align: right; }
@@ -61,7 +68,7 @@ td.right { text-align: right; }
 <body>
 <table>
 <colgroup>${colgroup}</colgroup>
-<thead><tr>${header}</tr></thead>
+<thead>${heading}<tr>${header}</tr></thead>
 <tbody>
 ${body}
 </tbody>

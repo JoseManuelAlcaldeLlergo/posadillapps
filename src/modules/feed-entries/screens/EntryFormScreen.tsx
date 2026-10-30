@@ -16,11 +16,11 @@ import {
   DateField,
   Screen,
   spacing,
+  SuggestionChips,
   TextField,
   useThemeColors,
 } from '@/core/ui';
 
-import { SuggestionChips } from '../components/SuggestionChips';
 import { listSuppliersWithFeeds, type SupplierWithFeeds } from '../favoritesRepository';
 import { findByName } from '../names';
 import { deleteEntry, getEntry, saveEntry } from '../repository';

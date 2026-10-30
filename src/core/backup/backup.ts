@@ -1,3 +1,5 @@
+import { sql } from 'drizzle-orm';
+
 import type { SyncDatabase } from '../db/types';
 import {
   BACKUP_APP_ID,
@@ -96,8 +98,8 @@ export function parseBackupFile(text: string, modules: readonly BackupParticipan
 
 /**
  * Replaces all module data with the backup, in one transaction: if anything
- * fails, nothing changes. Clears in reverse registry order so later modules
- * can reference earlier ones.
+ * fails, nothing changes. Foreign keys are checked at commit, so a module may
+ * reference rows of a module restored after it.
  */
 export function restoreBackup(
   db: SyncDatabase,
@@ -106,6 +108,8 @@ export function restoreBackup(
 ): void {
   const known = withBackup(modules);
   db.transaction((tx) => {
+    // Reset automatically when the transaction ends.
+    tx.run(sql`PRAGMA defer_foreign_keys = ON`);
     for (const module of [...known].reverse()) module.backup.clear(tx);
     for (const module of known) {
       const section = contents.modules.find((m) => m.id === module.id);

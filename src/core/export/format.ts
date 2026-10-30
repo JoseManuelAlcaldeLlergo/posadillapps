@@ -1,4 +1,4 @@
-import type { CellValue } from './types';
+import type { CellValue, DateSeparator } from './types';
 
 export type DateParts = { year: number; month: number; day: number };
 
@@ -22,10 +22,10 @@ export function parseIsoDate(iso: string): DateParts {
   return { year, month, day };
 }
 
-/** `2025-03-31` → `31-03-2025` */
-export function formatDate(iso: string): string {
+/** `2025-03-31` → `31-03-2025` (or `31/03/2025` with `/`) */
+export function formatDate(iso: string, separator: DateSeparator = '-'): string {
   const { year, month, day } = parseIsoDate(iso);
-  return `${pad2(day)}-${pad2(month)}-${year}`;
+  return [pad2(day), pad2(month), year].join(separator);
 }
 
 /** Number of decimals actually needed to show `value`, up to `max`. */
@@ -58,10 +58,10 @@ export function formatQuantity(value: number, unit: string): string {
 }
 
 /** Display text for a cell, as shown in the PDF. */
-export function formatCell(cell: CellValue): string {
+export function formatCell(cell: CellValue, dateSeparator: DateSeparator = '-'): string {
   switch (cell.kind) {
     case 'date':
-      return formatDate(cell.iso);
+      return formatDate(cell.iso, dateSeparator);
     case 'quantity':
       return formatQuantity(cell.value, cell.unit);
     case 'text':

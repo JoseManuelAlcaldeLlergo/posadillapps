@@ -22,6 +22,10 @@ describe('formatDate', () => {
     expect(formatDate('2025-03-31')).toBe('31-03-2025');
     expect(formatDate('2025-01-05')).toBe('05-01-2025');
   });
+
+  it('accepts a slash separator', () => {
+    expect(formatDate('2025-03-31', '/')).toBe('31/03/2025');
+  });
 });
 
 describe('formatNumber', () => {
@@ -64,6 +68,11 @@ describe('formatCell', () => {
     expect(formatCell({ kind: 'quantity', value: 25000, unit: 'kg' })).toBe('25.000 kg');
     expect(formatCell({ kind: 'text', value: 'SU 79' })).toBe('SU 79');
     expect(formatCell({ kind: 'text', value: null })).toBe('');
+  });
+
+  it('applies the date separator only to dates', () => {
+    expect(formatCell({ kind: 'date', iso: '2025-12-01' }, '/')).toBe('01/12/2025');
+    expect(formatCell({ kind: 'text', value: 'A diario' }, '/')).toBe('A diario');
   });
 });
 

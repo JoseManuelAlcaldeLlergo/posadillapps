@@ -16,7 +16,7 @@ El módulo tiene dos tipos de registro:
 | Matrícula | Texto | Sí | |
 | Frecuencia | Texto con sugerencias | Sí | Sugerencias: "A diario", "Semanalmente", "Según guías". Admite texto libre. |
 | Motivo de visita | Texto con sugerencias | Sí | |
-| Tipo de vehículo | Lista | Sí | |
+| Tipo de vehículo | Desplegable | Sí | Ver valores en Reglas. |
 | Activo | Sí/No | Sí | Por defecto sí. Los inactivos dejan de exportarse pero no se borran. |
 
 ### Campos de la visita
@@ -25,13 +25,13 @@ El módulo tiene dos tipos de registro:
 | Matrícula | Texto | Sí | |
 | Fecha | Fecha | Sí | Por defecto, hoy. |
 | Motivo de visita | Texto con sugerencias | Sí | |
-| Tipo de vehículo | Lista | Sí | |
+| Tipo de vehículo | Desplegable | Sí | Ver valores en Reglas. |
 | Origen | Referencia interna | No | Solo en visitas creadas automáticamente (ver Integración). |
 
 ## Reglas
 - **Matrícula**: se guarda en mayúsculas, sin validar formato, porque conviven formatos actuales (`6105 HHR`) y antiguos provinciales (`CO-46336-VE`). Para buscar y comparar se normaliza quitando espacios y guiones.
 - **Autocompletado**: al escribir una matrícula ya usada, se rellenan tipo y motivo con los de su último registro (editables).
-- **Tipo de vehículo**: lista fija de Turismo, Camión, Tractor y Otro.
+- **Tipo de vehículo**: desplegable con una lista fija, sin texto libre: "Vehículo particular", "Camión de alimento", "Camión de ganado", "Camión de retirada de cadáveres" y "Otros".
 - **Motivo de visita**: sugerencias predefinidas más los motivos ya usados. Predefinidos: "Control y cuidado de animales", "Veterinario", "Transporte de pienso", "Transporte de animales", "Recogida de animales (venta)", "Vehículo particular".
 - En papel se usan comillas (") para repetir el motivo de la fila anterior. En la app se guarda siempre el texto completo, y la opción "Guardar y añadir otro" conserva motivo y tipo.
 
@@ -52,7 +52,7 @@ Cada descarga de pienso la hace un camión que entra en la explotación, así qu
     - Es opcional. Si se deja vacío, no se crea la visita y se muestra un aviso.
 
 ### Comportamiento
-- Al guardar una entrada de alimentos con matrícula, se crea una visita con: fecha = fecha de la entrada, matrícula, motivo "Transporte de pienso", tipo "Camión".
+- Al guardar una entrada de alimentos con matrícula, se crea una visita con: fecha = fecha de la entrada, matrícula, motivo "Transporte de pienso", tipo "Camión de alimento".
 - **Una sola visita por camión y día.** Si ya existe una visita automática con la misma fecha y matrícula (p. ej. varias entradas de la misma descarga con "Guardar y añadir otro"), las entradas se vinculan a esa visita en lugar de crear otra.
 - Si se cambia la fecha o la matrícula de una entrada de alimentos, se reasigna su visita según la regla anterior.
 - Al borrar una entrada de alimentos, su visita se borra solo si no le queda ninguna otra entrada vinculada.
