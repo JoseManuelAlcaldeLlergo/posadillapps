@@ -11,6 +11,7 @@ App Android modular para registros de una explotación ganadera. Requisitos en @
 
 ## Comandos
 <!-- Completar tras crear el proyecto -->
+- Node 24 (ver `.nvmrc`): con Node 22.9 los tests que usan `better-sqlite3` fallan con un error de segmentación
 - Arrancar: npx expo start
 - Tests: npm test
 - Lint y tipos: npm run lint && npx tsc --noEmit
