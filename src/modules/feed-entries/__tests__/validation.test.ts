@@ -7,6 +7,7 @@ const valid: EntryFormValues = {
   supplierName: '  Mezclas  del Valle ',
   feedName: 'Cerdos crecimiento',
   invoice: ' F2000 525 ',
+  truckPlate: ' 1234  bcd ',
 };
 
 describe('validateEntryForm', () => {
@@ -20,8 +21,14 @@ describe('validateEntryForm', () => {
         supplierName: 'Mezclas del Valle',
         feedName: 'Cerdos crecimiento',
         invoice: 'F2000 525',
+        truckPlate: '1234 BCD',
       },
     });
+  });
+
+  it('leaves the truck plate empty when not given', () => {
+    const result = validateEntryForm({ ...valid, truckPlate: '   ' });
+    expect(result).toMatchObject({ ok: true, value: { truckPlate: null } });
   });
 
   it('accepts decimals with comma and an empty invoice', () => {

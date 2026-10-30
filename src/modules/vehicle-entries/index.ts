@@ -8,5 +8,6 @@ export {
   linkAutomaticVisit,
   type AutomaticVisitInput,
 } from './repository';
-export type { VehicleVisit } from './schema';
+/** Only to declare foreign keys to visits; use the functions above to change them. */
+export { vehicleVisits, type VehicleVisit } from './schema';
 export { VEHICLE_TYPE_LABELS, type VehicleType } from './vehicleTypes';

@@ -21,6 +21,7 @@ import {
   useThemeColors,
 } from '@/core/ui';
 
+import { plateKey } from '../../vehicle-entries';
 import { listSuppliersWithFeeds, type SupplierWithFeeds } from '../favoritesRepository';
 import { findByName } from '../names';
 import { deleteEntry, getEntry, saveEntry } from '../repository';
@@ -40,6 +41,7 @@ function emptyForm(): EntryFormValues {
     supplierName: '',
     feedName: '',
     invoice: '',
+    truckPlate: '',
   };
 }
 
@@ -54,6 +56,7 @@ function loadForm(entryId: number | undefined): EntryFormValues | null {
     supplierName: entry.supplierName,
     feedName: entry.feedName,
     invoice: entry.invoice ?? '',
+    truckPlate: entry.truckPlate ?? '',
   };
 }
 
@@ -68,6 +71,7 @@ export default function EntryFormScreen({ entryId }: Props) {
   // New favorites are offered checked when creating, unchecked when editing old entries.
   const [saveSupplier, setSaveSupplier] = useState(!isEdit);
   const [saveFeed, setSaveFeed] = useState(!isEdit);
+  const [saveTruck, setSaveTruck] = useState(!isEdit);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
 
   useFocusEffect(
@@ -95,6 +99,21 @@ export default function EntryFormScreen({ entryId }: Props) {
   const offerSupplier = values.supplierName.trim() !== '' && !supplier;
   const feedCanBeFavorite = Boolean(supplier) || (offerSupplier && saveSupplier);
   const offerFeed = values.feedName.trim() !== '' && !feed && feedCanBeFavorite;
+  const truckKey = plateKey(values.truckPlate);
+  const truck = supplier?.trucks.find((t) => t.plateKey === truckKey);
+  const offerTruck = truckKey !== '' && !truck && feedCanBeFavorite;
+
+  /** Changes the supplier; preselects its truck when it has exactly one and none is typed. */
+  const setSupplierName = (supplierName: string) => {
+    const next = findByName(suppliers, supplierName);
+    const onlyTruck = next?.trucks.length === 1 ? next.trucks[0].plate : undefined;
+    setValues({
+      ...values,
+      supplierName,
+      truckPlate: !values.truckPlate.trim() && onlyTruck ? onlyTruck : values.truckPlate,
+    });
+    if (errors.supplierName) setErrors({ ...errors, supplierName: undefined });
+  };
 
   /** Saves the form; returns the saved entry's summary or null if invalid/failed. */
   const submit = (): string | null => {
@@ -107,7 +126,11 @@ export default function EntryFormScreen({ entryId }: Props) {
       const saved = saveEntry(
         db,
         result.value,
-        { saveSupplier: offerSupplier && saveSupplier, saveFeed: offerFeed && saveFeed },
+        {
+          saveSupplier: offerSupplier && saveSupplier,
+          saveFeed: offerFeed && saveFeed,
+          saveTruck: offerTruck && saveTruck,
+        },
         entryId,
       );
       return `${saved.feedName} · ${formatQuantity(saved.quantity, saved.unit)}`;
@@ -124,7 +147,7 @@ export default function EntryFormScreen({ entryId }: Props) {
   const onSaveAndAddAnother = () => {
     const summary = submit();
     if (summary === null) return;
-    // Keep date, supplier, invoice and unit; clear the product.
+    // Keep date, supplier, invoice, truck and unit; clear the product.
     setValues({ ...values, quantity: '', feedName: '' });
     setErrors({});
     setSaveFeed(true);
@@ -189,7 +212,7 @@ export default function EntryFormScreen({ entryId }: Props) {
         <TextField
           label="Proveedor"
           value={values.supplierName}
-          onChangeText={(text) => set('supplierName', text)}
+          onChangeText={setSupplierName}
           placeholder="Mezclas del Valle"
           autoCapitalize="words"
           error={errors.supplierName}
@@ -198,7 +221,7 @@ export default function EntryFormScreen({ entryId }: Props) {
           items={suppliers}
           query={values.supplierName}
           label="Favoritos"
-          onSelect={(item) => set('supplierName', item.name)}
+          onSelect={(item) => setSupplierName(item.name)}
         />
         {offerSupplier ? (
           <Checkbox
@@ -244,6 +267,39 @@ export default function EntryFormScreen({ entryId }: Props) {
         autoCapitalize="characters"
       />
 
+      <View style={styles.group}>
+        <TextField
+          label="Matrícula del camión"
+          optional
+          value={values.truckPlate}
+          onChangeText={(text) => set('truckPlate', text)}
+          placeholder="1234 BCD"
+          autoCapitalize="characters"
+          autoCorrect={false}
+        />
+        {supplier && supplier.trucks.length > 0 ? (
+          <SuggestionChips
+            items={supplier.trucks.map((t) => ({ id: t.id, name: t.plate }))}
+            query={values.truckPlate}
+            label={`Camiones de ${supplier.name}`}
+            matchKey={plateKey}
+            onSelect={(item) => set('truckPlate', item.name)}
+          />
+        ) : null}
+        {offerTruck ? (
+          <Checkbox
+            label={`Guardar «${values.truckPlate.trim().toUpperCase()}» en los camiones de «${(supplier?.name ?? values.supplierName).trim()}»`}
+            checked={saveTruck}
+            onChange={setSaveTruck}
+          />
+        ) : null}
+        {truckKey === '' ? (
+          <Text style={[styles.hint, { color: colors.textMuted }]}>
+            Sin matrícula no se apunta la entrada del camión en Entrada de vehículos.
+          </Text>
+        ) : null}
+      </View>
+
       <View style={styles.buttons}>
         <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
         {isEdit ? (
@@ -264,4 +320,5 @@ const styles = StyleSheet.create({
   group: { gap: spacing.sm },
   buttons: { gap: spacing.sm, marginTop: spacing.sm },
   notice: { borderWidth: 1, borderRadius: 8, padding: spacing.sm + 4 },
+  hint: { fontSize: 13 },
 });

@@ -14,10 +14,13 @@ import {
 } from '@/core/ui';
 
 import { FeedRow } from '../components/FeedRow';
+import { normalizePlate } from '../../vehicle-entries';
 import {
   addFeed,
+  addTruck,
   deleteFeed,
   deleteSupplier,
+  deleteTruck,
   DuplicateNameError,
   getSupplierWithFeeds,
   renameFeed,
@@ -48,6 +51,8 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
   const [nameError, setNameError] = useState<string | undefined>();
   const [newFeed, setNewFeed] = useState('');
   const [feedError, setFeedError] = useState<string | undefined>();
+  const [newTruck, setNewTruck] = useState('');
+  const [truckError, setTruckError] = useState<string | undefined>();
 
   const reload = useCallback(() => {
     const found = getSupplierWithFeeds(db, supplierId) ?? null;
@@ -109,10 +114,38 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
     reload();
   };
 
+  const onAddTruck = () => {
+    if (!normalizePlate(newTruck)) {
+      setTruckError('Escribe la matrícula del camión');
+      return;
+    }
+    const message = tryRename(
+      () => addTruck(db, supplier.id, newTruck),
+      'Ese camión ya está en la lista',
+    );
+    setTruckError(message);
+    if (!message) {
+      setNewTruck('');
+      reload();
+    }
+  };
+
+  const onDeleteTruck = async (truckId: number, plate: string) => {
+    const confirmed = await confirmAsync({
+      title: 'Borrar camión',
+      message: `¿Quitar «${plate}» de los camiones habituales? Las entradas y visitas ya registradas no cambian.`,
+      confirmLabel: 'Borrar',
+      destructive: true,
+    });
+    if (!confirmed) return;
+    deleteTruck(db, truckId);
+    reload();
+  };
+
   const onDeleteSupplier = async () => {
     const confirmed = await confirmAsync({
       title: 'Borrar proveedor',
-      message: `¿Borrar «${supplier.name}» y sus piensos habituales de favoritos? Las entradas ya registradas no cambian.`,
+      message: `¿Borrar «${supplier.name}» y sus piensos y camiones habituales de favoritos? Las entradas ya registradas no cambian.`,
       confirmLabel: 'Borrar',
       destructive: true,
     });
@@ -179,6 +212,45 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
         <Button label="Añadir pienso" variant="secondary" onPress={onAddFeed} />
       </View>
 
+      <Text style={[styles.section, { color: colors.text }]}>Camiones habituales</Text>
+      <Text style={[styles.hint, { color: colors.textMuted }]}>
+        Se sugieren en la matrícula del camión de cada entrada; si solo hay uno, se rellena solo.
+      </Text>
+      {supplier.trucks.length === 0 ? (
+        <Text style={{ color: colors.textMuted }}>Todavía no hay camiones para este proveedor.</Text>
+      ) : null}
+      {supplier.trucks.map((truck) => (
+        <View
+          key={truck.id}
+          style={[styles.truck, { borderColor: colors.border, backgroundColor: colors.surface }]}
+        >
+          <Text style={[styles.truckPlate, { color: colors.text }]}>{truck.plate}</Text>
+          <Button
+            label="Borrar"
+            variant="danger"
+            onPress={() => onDeleteTruck(truck.id, truck.plate)}
+          />
+        </View>
+      ))}
+
+      <View style={styles.group}>
+        <TextField
+          label="Nuevo camión (matrícula)"
+          value={newTruck}
+          onChangeText={(text) => {
+            setNewTruck(text);
+            setTruckError(undefined);
+          }}
+          placeholder="1234 BCD"
+          autoCapitalize="characters"
+          autoCorrect={false}
+          returnKeyType="done"
+          onSubmitEditing={onAddTruck}
+          error={truckError}
+        />
+        <Button label="Añadir camión" variant="secondary" onPress={onAddTruck} />
+      </View>
+
       <View style={styles.danger}>
         <Button label="Borrar proveedor" variant="danger" onPress={onDeleteSupplier} />
       </View>
@@ -191,4 +263,13 @@ const styles = StyleSheet.create({
   hint: { fontSize: 13 },
   section: { fontSize: 18, fontWeight: '600', marginTop: spacing.sm },
   danger: { marginTop: spacing.lg },
+  truck: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 12,
+    padding: spacing.md,
+  },
+  truckPlate: { flex: 1, fontSize: 16, fontWeight: '600' },
 });
