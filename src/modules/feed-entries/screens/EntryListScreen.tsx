@@ -1,4 +1,4 @@
-import { router, Stack, useFocusEffect } from 'expo-router';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
@@ -22,6 +22,11 @@ import type { FeedEntry } from '../schema';
 
 export default function EntryListScreen() {
   const colors = useThemeColors();
+  // Set when opened from an automatic vehicle visit.
+  const params = useLocalSearchParams<{ visitId?: string }>();
+  const [vehicleVisitId, setVehicleVisitId] = useState<number | null>(() =>
+    params.visitId ? Number(params.visitId) : null,
+  );
   const [range, setRange] = useState<OptionalDateRange>({ from: null, to: null });
   const [supplierName, setSupplierName] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -30,12 +35,13 @@ export default function EntryListScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      setEntries(listEntries(db, { ...range, supplierName }));
+      setEntries(listEntries(db, { ...range, supplierName, vehicleVisitId }));
       setSupplierNames(listEntrySupplierNames(db));
-    }, [range, supplierName]),
+    }, [range, supplierName, vehicleVisitId]),
   );
 
-  const activeFilters = (range.from || range.to ? 1 : 0) + (supplierName ? 1 : 0);
+  const activeFilters =
+    (range.from || range.to ? 1 : 0) + (supplierName ? 1 : 0) + (vehicleVisitId ? 1 : 0);
 
   const header = (
     <View style={styles.header}>
@@ -68,10 +74,19 @@ export default function EntryListScreen() {
             onPress={() => {
               setRange({ from: null, to: null });
               setSupplierName(null);
+              setVehicleVisitId(null);
             }}
           />
         ) : null}
       </ChipRow>
+      {vehicleVisitId ? (
+        <View style={[styles.visitFilter, { borderColor: colors.primary }]}>
+          <Text style={{ color: colors.text }}>Entradas de una visita de Entrada de vehículos.</Text>
+          <ChipRow>
+            <Chip label="Ver todas" onPress={() => setVehicleVisitId(null)} />
+          </ChipRow>
+        </View>
+      ) : null}
       {showFilters ? (
         <View style={[styles.filters, { borderColor: colors.border }]}>
           <DateRangeField value={range} onChange={setRange} optional />
@@ -110,6 +125,7 @@ export default function EntryListScreen() {
             subtitle={[
               `${item.supplierName} — ${item.feedName}`,
               item.invoice ? `Factura/albarán: ${item.invoice}` : null,
+              item.truckPlate ? `Camión: ${item.truckPlate}` : null,
             ]
               .filter(Boolean)
               .join('\n')}
@@ -137,4 +153,5 @@ const styles = StyleSheet.create({
   filters: { borderWidth: 1, borderRadius: 12, padding: spacing.md, gap: spacing.md },
   supplierFilter: { gap: spacing.xs },
   filterLabel: { fontSize: 14, fontWeight: '600' },
+  visitFilter: { borderWidth: 1, borderRadius: 8, padding: spacing.sm + 4, gap: spacing.sm },
 });

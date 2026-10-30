@@ -1,6 +1,7 @@
 import { parseIsoDate } from '@/core/export/format';
 import { parseDecimal } from '@/core/numbers';
 
+import { normalizePlate } from '../vehicle-entries';
 import { normalizeName } from './names';
 import type { EntryInput } from './repository';
 import type { FeedUnit } from './units';
@@ -13,6 +14,7 @@ export type EntryFormValues = {
   supplierName: string;
   feedName: string;
   invoice: string;
+  truckPlate: string;
 };
 
 export type EntryFormErrors = Partial<Record<keyof EntryFormValues, string>>;
@@ -54,6 +56,7 @@ export function validateEntryForm(values: EntryFormValues): EntryValidation {
   }
 
   const invoice = normalizeName(values.invoice);
+  const truckPlate = normalizePlate(values.truckPlate);
   return {
     ok: true,
     value: {
@@ -63,6 +66,7 @@ export function validateEntryForm(values: EntryFormValues): EntryValidation {
       supplierName,
       feedName,
       invoice: invoice || null,
+      truckPlate: truckPlate || null,
     },
   };
 }

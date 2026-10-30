@@ -1,14 +1,19 @@
 /**
  * @jest-environment node
  */
+import { sql } from 'drizzle-orm';
+
 import { createTestDb } from '@/core/db/testing/createTestDb';
 import type { SyncDatabase } from '@/core/db/types';
+import { getVisit, listVisits, saveVisit } from '@/modules/vehicle-entries/repository';
 
 import {
   addFeed,
+  addTruck,
   createSupplier,
   deleteFeed,
   deleteSupplier,
+  deleteTruck,
   DuplicateNameError,
   getSupplierWithFeeds,
   listSuppliersWithFeeds,
@@ -23,6 +28,7 @@ import {
   listEntriesInRange,
   listEntrySupplierNames,
   saveEntry,
+  FEED_VISIT_SOURCE,
   type EntryInput,
 } from '../repository';
 
@@ -43,6 +49,7 @@ function entry(overrides: Partial<EntryInput> = {}): EntryInput {
     supplierName: 'Mezclas del Valle',
     feedName: 'Cerdos crecimiento',
     invoice: 'F2000 525',
+    truckPlate: null,
     ...overrides,
   };
 }
@@ -205,5 +212,149 @@ describe('favorites', () => {
     deleteSupplier(db, supplier.id);
     expect(getSupplierWithFeeds(db, supplier.id)).toBeUndefined();
     expect(listSuppliersWithFeeds(db)).toEqual([]);
+  });
+});
+
+describe('truck favorites', () => {
+  it('rejects duplicate plates per supplier ignoring spaces and hyphens', () => {
+    const supplier = createSupplier(db, 'Mezclas del Valle');
+    expect(addTruck(db, supplier.id, ' co-46336 ve').plate).toBe('CO-46336 VE');
+    expect(() => addTruck(db, supplier.id, 'CO46336VE')).toThrow(DuplicateNameError);
+    const other = createSupplier(db, 'Otro');
+    expect(() => addTruck(db, other.id, 'CO-46336-VE')).not.toThrow();
+    expect(getSupplierWithFeeds(db, supplier.id)?.trucks.map((t) => t.plate)).toEqual(['CO-46336 VE']);
+  });
+
+  it('links entries to the truck and keeps the plate when it is deleted', () => {
+    const supplier = createSupplier(db, 'Mezclas del Valle');
+    const truck = addTruck(db, supplier.id, '1234 BCD');
+    const saved = saveEntry(db, entry({ truckPlate: '1234-bcd' }));
+    expect(saved).toMatchObject({ truckId: truck.id, truckPlate: '1234 BCD' });
+
+    deleteTruck(db, truck.id);
+    expect(getEntry(db, saved.id)).toMatchObject({ truckId: null, truckPlate: '1234 BCD' });
+  });
+
+  it('saves a new truck only when asked', () => {
+    saveEntry(db, entry({ truckPlate: '1234 BCD' }), { saveSupplier: true, saveFeed: true });
+    expect(listSuppliersWithFeeds(db)[0].trucks).toEqual([]);
+    saveEntry(db, entry({ truckPlate: '1234 BCD' }), {
+      saveSupplier: true,
+      saveFeed: true,
+      saveTruck: true,
+    });
+    expect(listSuppliersWithFeeds(db)[0].trucks.map((t) => t.plate)).toEqual(['1234 BCD']);
+  });
+
+  it('cascades supplier deletion to its trucks', () => {
+    const supplier = createSupplier(db, 'Mezclas del Valle');
+    addTruck(db, supplier.id, '1234 BCD');
+    deleteSupplier(db, supplier.id);
+    expect(db.all(sql`select * from feed_supplier_trucks`)).toEqual([]);
+  });
+});
+
+describe('automatic vehicle visits', () => {
+  it('creates a feed delivery visit when the entry has a truck plate', () => {
+    const saved = saveEntry(db, entry({ date: '2025-03-31', truckPlate: '1234 bcd' }));
+    const visit = getVisit(db, saved.vehicleVisitId!);
+    expect(visit).toMatchObject({
+      date: '2025-03-31',
+      plate: '1234 BCD',
+      reason: 'Transporte de pienso',
+      vehicleType: 'feed_truck',
+      source: FEED_VISIT_SOURCE,
+    });
+  });
+
+  it('creates no visit without a plate', () => {
+    const saved = saveEntry(db, entry({ truckPlate: null }));
+    expect(saved.vehicleVisitId).toBeNull();
+    expect(listVisits(db)).toEqual([]);
+  });
+
+  it('links two entries of the same truck and day to a single visit', () => {
+    const a = saveEntry(db, entry({ feedName: 'Cerdos crecimiento', truckPlate: '1234 BCD' }));
+    const b = saveEntry(db, entry({ feedName: 'Alfalfa en rama', truckPlate: '1234-bcd' }));
+    expect(b.vehicleVisitId).toBe(a.vehicleVisitId);
+    expect(listVisits(db)).toHaveLength(1);
+  });
+
+  it('does not reuse a manual visit of the same truck and day', () => {
+    const manual = saveVisit(db, {
+      date: '2025-03-31',
+      plate: '1234 BCD',
+      reason: 'Transporte de pienso',
+      vehicleType: 'feed_truck',
+    });
+    const saved = saveEntry(db, entry({ truckPlate: '1234 BCD' }));
+    expect(saved.vehicleVisitId).not.toBe(manual.id);
+  });
+
+  it('reassigns the visit when the date changes and deletes the one left empty', () => {
+    const a = saveEntry(db, entry({ date: '2025-03-31', truckPlate: '1234 BCD' }));
+    const oldVisit = a.vehicleVisitId!;
+
+    const moved = saveEntry(db, entry({ date: '2025-04-01', truckPlate: '1234 BCD' }), undefined, a.id);
+    expect(moved.vehicleVisitId).not.toBe(oldVisit);
+    expect(getVisit(db, oldVisit)).toBeUndefined();
+    expect(getVisit(db, moved.vehicleVisitId!)?.date).toBe('2025-04-01');
+  });
+
+  it('keeps the old visit while other entries still use it', () => {
+    const a = saveEntry(db, entry({ truckPlate: '1234 BCD' }));
+    const b = saveEntry(db, entry({ feedName: 'Alfalfa en rama', truckPlate: '1234 BCD' }));
+    const shared = a.vehicleVisitId!;
+
+    const changed = saveEntry(db, entry({ truckPlate: '9999 ZZZ' }), undefined, a.id);
+    expect(changed.vehicleVisitId).not.toBe(shared);
+    expect(getVisit(db, shared)).toBeDefined();
+    expect(getEntry(db, b.id)?.vehicleVisitId).toBe(shared);
+  });
+
+  it('removes the visit when the plate is cleared', () => {
+    const a = saveEntry(db, entry({ truckPlate: '1234 BCD' }));
+    const cleared = saveEntry(db, entry({ truckPlate: null }), undefined, a.id);
+    expect(cleared.vehicleVisitId).toBeNull();
+    expect(listVisits(db)).toEqual([]);
+  });
+
+  it('deletes the visit with its last entry', () => {
+    const a = saveEntry(db, entry({ truckPlate: '1234 BCD' }));
+    const b = saveEntry(db, entry({ feedName: 'Alfalfa en rama', truckPlate: '1234 BCD' }));
+    deleteEntry(db, a.id);
+    expect(listVisits(db)).toHaveLength(1);
+    deleteEntry(db, b.id);
+    expect(listVisits(db)).toEqual([]);
+  });
+
+  it('keeps reason and type edited in the vehicles module', () => {
+    const a = saveEntry(db, entry({ truckPlate: '1234 BCD' }));
+    const visit = getVisit(db, a.vehicleVisitId!)!;
+    saveVisit(
+      db,
+      { date: visit.date, plate: visit.plate, reason: 'Transporte de animales', vehicleType: 'livestock_truck' },
+      visit.id,
+    );
+    const b = saveEntry(db, entry({ feedName: 'Alfalfa en rama', truckPlate: '1234 BCD' }));
+    expect(getVisit(db, b.vehicleVisitId!)).toMatchObject({
+      reason: 'Transporte de animales',
+      vehicleType: 'livestock_truck',
+    });
+  });
+
+  it('lists the entries of a visit', () => {
+    const a = saveEntry(db, entry({ invoice: 'A', truckPlate: '1234 BCD' }));
+    saveEntry(db, entry({ invoice: 'B', truckPlate: '1234 BCD' }));
+    saveEntry(db, entry({ invoice: 'C', truckPlate: null }));
+    expect(listEntries(db, { vehicleVisitId: a.vehicleVisitId }).map((e) => e.invoice)).toEqual([
+      'B',
+      'A',
+    ]);
+  });
+
+  it('rolls back the visit if the entry cannot be saved', () => {
+    expect(() => saveEntry(db, entry({ quantity: 0, truckPlate: '1234 BCD' }))).toThrow();
+    expect(listVisits(db)).toEqual([]);
   });
 });
