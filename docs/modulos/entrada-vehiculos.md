@@ -84,11 +84,11 @@ Cada descarga de pienso la hace un camión que entra en la explotación, así qu
 - En Excel, la columna FECHA mezcla texto (frecuencias) y fechas reales (visitas).
 
 ## Criterios de aceptación
-- [ ] Registrar un vehículo habitual y verlo al principio de cualquier exportación.
-- [ ] Desactivar un vehículo habitual y comprobar que deja de exportarse.
-- [ ] Registrar una visita manual en menos de 20 segundos usando el autocompletado de matrícula.
-- [ ] Registrar dos entradas de alimentos del mismo camión y día y comprobar que generan una sola visita.
-- [ ] Cambiar la fecha de una entrada de alimentos y comprobar que su visita se actualiza.
-- [ ] Borrar las entradas de alimentos de una visita automática y comprobar que la visita desaparece.
-- [ ] Exportar a PDF con el título y la tabla como el formulario en papel, e imprimirlo.
-- [ ] Exportar a Excel con las mismas filas.
+- [x] Registrar un vehículo habitual y verlo al principio de cualquier exportación.
+- [x] Desactivar un vehículo habitual y comprobar que deja de exportarse.
+- [x] Registrar una visita manual en menos de 20 segundos usando el autocompletado de matrícula.
+- [x] Registrar dos entradas de alimentos del mismo camión y día y comprobar que generan una sola visita.
+- [x] Cambiar la fecha de una entrada de alimentos y comprobar que su visita se actualiza.
+- [x] Borrar las entradas de alimentos de una visita automática y comprobar que la visita desaparece.
+- [x] Exportar a PDF con el título y la tabla como el formulario en papel, e imprimirlo.
+- [x] Exportar a Excel con las mismas filas.
