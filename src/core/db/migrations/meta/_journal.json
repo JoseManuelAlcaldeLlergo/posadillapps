@@ -15,6 +15,13 @@
       "when": 1793400003748,
       "tag": "0001_app_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1793402356033,
+      "tag": "0002_vehicle_entries",
+      "breakpoints": true
     }
   ]
 }
