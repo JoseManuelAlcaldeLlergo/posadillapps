@@ -32,6 +32,11 @@ export function optionalString(value: unknown, path: string): string | null {
   return value;
 }
 
+export function requireBoolean(value: unknown, path: string): boolean {
+  if (typeof value !== 'boolean') fail(path, 'sí o no (true/false)');
+  return value;
+}
+
 export function requireNumber(value: unknown, path: string): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) fail(path, 'un número');
   return value;
