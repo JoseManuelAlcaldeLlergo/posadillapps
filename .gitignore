@@ -41,3 +41,6 @@ example
 # generated native folders
 /ios
 /android
+
+# Copia de ejemplo generada con npm run sample:backup
+docs/rediseno/datos-de-ejemplo.json
