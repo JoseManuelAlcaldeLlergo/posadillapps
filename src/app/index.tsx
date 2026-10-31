@@ -1,5 +1,6 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { SectionList, StyleSheet, Text, View } from 'react-native';
+import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
 import { BackupReminder } from '@/core/backup/BackupReminder';
 import { settingsEntries, type HomeEntry } from '@/core/settingsEntries';
@@ -8,6 +9,7 @@ import {
   groupByCategory,
   ModuleCard,
   Screen,
+  SectionHeader,
   spacing,
   typography,
   useThemeColors,
@@ -15,6 +17,29 @@ import {
 import { modules } from '@/modules/registry';
 
 const sections = groupByCategory<HomeEntry>([...modules, ...settingsEntries]);
+
+/** The app's own screens: a light row, so they weigh less than the record modules. */
+function SettingsRow({ entry }: { entry: HomeEntry }) {
+  const colors = useThemeColors();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={entry.description ? `${entry.title}. ${entry.description}` : entry.title}
+      onPress={() => router.push(entry.route)}
+      android_ripple={{ color: colors.ripple }}
+      style={styles.settingsRow}
+    >
+      <MaterialCommunityIcons name={entry.icon} size={24} color={colors.category.settings.accent} />
+      <View style={styles.settingsTexts}>
+        <Text style={[typography.bodyStrong, { color: colors.text }]}>{entry.title}</Text>
+        {entry.description ? (
+          <Text style={[typography.caption, { color: colors.textMuted }]}>{entry.description}</Text>
+        ) : null}
+      </View>
+      <MaterialCommunityIcons name="chevron-right" size={24} color={colors.textMuted} />
+    </Pressable>
+  );
+}
 
 export default function HomeScreen() {
   const colors = useThemeColors();
@@ -46,21 +71,25 @@ export default function HomeScreen() {
               ],
             ]}
           >
-            <Text accessibilityRole="header" style={[typography.label, { color: colors.textMuted }]}>
-              {section.title}
-            </Text>
+            <SectionHeader title={section.title} />
           </View>
         )}
-        renderItem={({ item }) => (
-          <ModuleCard
-            title={item.title}
-            subtitle={item.description}
-            icon={item.icon}
-            category={item.category}
-            onPress={() => router.push(item.route)}
-          />
-        )}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        renderItem={({ item }) =>
+          item.category === 'settings' ? (
+            <SettingsRow entry={item} />
+          ) : (
+            <ModuleCard
+              title={item.title}
+              subtitle={item.description}
+              icon={item.icon}
+              category={item.category}
+              onPress={() => router.push(item.route)}
+            />
+          )
+        }
+        ItemSeparatorComponent={({ section }) =>
+          section.category === 'settings' ? null : <View style={styles.separator} />
+        }
       />
     </Screen>
   );
@@ -69,10 +98,18 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   list: { padding: spacing.md, paddingBottom: spacing.xl },
   header: { gap: spacing.md },
-  sectionHeader: { paddingTop: spacing.lg, paddingBottom: spacing.sm },
+  sectionHeader: { paddingTop: spacing.sm },
   settingsHeader: {
     marginTop: spacing.lg,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   separator: { height: spacing.md },
+  settingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    minHeight: 56,
+    paddingVertical: spacing.sm,
+  },
+  settingsTexts: { flex: 1, gap: spacing.xxs },
 });
