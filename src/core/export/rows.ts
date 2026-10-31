@@ -1,7 +1,7 @@
-import type { TableDefinition } from './types';
+import type { PeriodType, TableDefinition } from './types';
 
 /** Rows in export order, without mutating the input. */
-export function sortRows<Row>(definition: TableDefinition<Row>, rows: readonly Row[]): Row[] {
+export function sortRows<Row>(definition: TableDefinition<Row, PeriodType>, rows: readonly Row[]): Row[] {
   const copy = [...rows];
   return definition.compareRows ? copy.sort(definition.compareRows) : copy;
 }

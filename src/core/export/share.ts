@@ -5,16 +5,16 @@ import * as Sharing from 'expo-sharing';
 import { buildXlsxBase64, XLSX_MIME_TYPE } from './excel';
 import { exportFileName } from './format';
 import { buildPdfHtml, pageSize } from './pdf';
-import type { TableDefinition } from './types';
+import type { PeriodType, TableDefinition } from './types';
 
 /** Opens the Android print dialog with the table. */
-export async function printTable<Row>(definition: TableDefinition<Row>, rows: readonly Row[]) {
+export async function printTable<Row>(definition: TableDefinition<Row, PeriodType>, rows: readonly Row[]) {
   await Print.printAsync({ html: buildPdfHtml(definition, rows) });
 }
 
 /** Generates the PDF and opens the share sheet. `suffix` is appended to the file name. */
 export async function sharePdf<Row>(
-  definition: TableDefinition<Row>,
+  definition: TableDefinition<Row, PeriodType>,
   rows: readonly Row[],
   suffix?: string,
 ) {
@@ -37,7 +37,7 @@ export async function sharePdf<Row>(
 
 /** Generates the .xlsx and opens the share sheet. `suffix` is appended to the file name. */
 export async function shareXlsx<Row>(
-  definition: TableDefinition<Row>,
+  definition: TableDefinition<Row, PeriodType>,
   rows: readonly Row[],
   suffix?: string,
 ) {

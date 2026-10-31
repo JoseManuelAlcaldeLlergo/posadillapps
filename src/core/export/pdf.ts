@@ -1,6 +1,13 @@
 import { formatCell } from './format';
 import { sortRows } from './rows';
-import type { CellValue, ColumnAlign, ColumnDefinition, PageOrientation, TableDefinition } from './types';
+import type {
+  CellValue,
+  ColumnAlign,
+  ColumnDefinition,
+  PageOrientation,
+  PeriodType,
+  TableDefinition,
+} from './types';
 
 const DEFAULT_WIDTH = 15;
 
@@ -12,8 +19,12 @@ export function pageSize(orientation: PageOrientation): { width: number; height:
 /**
  * Printable HTML for a table: A4, borders on every cell, bold centered
  * headers repeated on each page. The optional heading repeats too.
+ * `bodyRowHeight` sets the minimum height of data rows.
  */
-export function buildPdfHtml<Row>(definition: TableDefinition<Row>, rows: readonly Row[]): string {
+export function buildPdfHtml<Row>(
+  definition: TableDefinition<Row, PeriodType>,
+  rows: readonly Row[],
+): string {
   const { columns, dateSeparator } = definition;
   const totalWidth = columns.reduce((sum, column) => sum + (column.width ?? DEFAULT_WIDTH), 0);
 
@@ -45,6 +56,10 @@ export function buildPdfHtml<Row>(definition: TableDefinition<Row>, rows: readon
     })
     .join('\n');
 
+  const rowHeight = definition.bodyRowHeight
+    ? `\ntbody td { height: ${definition.bodyRowHeight}pt; }`
+    : '';
+
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -62,7 +77,7 @@ th { font-weight: bold; text-align: center; }
 th.heading { border: none; padding: 0 0 8px; font-size: 11pt; }
 td.left { text-align: left; }
 td.center { text-align: center; }
-td.right { text-align: right; }
+td.right { text-align: right; }${rowHeight}
 </style>
 </head>
 <body>

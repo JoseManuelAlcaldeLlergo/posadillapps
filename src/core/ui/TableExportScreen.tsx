@@ -1,65 +1,93 @@
 import { Stack, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 
-import { dateRangePresets, type DateRange } from '../dates';
-import { formatDate } from '../export/format';
+import { dateRangePresets } from '../dates';
+import { periodFileSuffix } from '../export/format';
+import { resolvePeriod, type PeriodInput } from '../export/period';
 import { printTable, sharePdf, shareXlsx } from '../export/share';
-import type { TableDefinition } from '../export/types';
+import type { PeriodType, PeriodValue, TableDefinition } from '../export/types';
 import { Button } from './Button';
 import { DateRangeField, type OptionalDateRange } from './DateRangeField';
 import { Screen } from './Screen';
 import { spacing, useThemeColors } from './theme';
+import { YearRangeField, type YearRangeText } from './YearRangeField';
 
 type Action = 'print' | 'pdf' | 'xlsx';
 
-type Props<Row> = {
+type Props<Row, P extends PeriodType> = {
   /** Header title, e.g. `Exportar entradas`. */
   screenTitle: string;
-  table: TableDefinition<Row>;
-  /** Records in the range (both ends inclusive), for the status line. */
-  count: (range: DateRange) => number;
-  /** Rows to export for the range. */
-  load: (range: DateRange) => Row[];
+  table: TableDefinition<Row, P>;
+  /** Records in the period (both ends inclusive), for the status line. */
+  count: (period: PeriodValue<P>) => number;
+  /** Rows to export for the period. */
+  load: (period: PeriodValue<P>) => Row[];
   /** Status line for the count, e.g. `3 entradas en el rango.` */
   countMessage: (count: number) => string;
-  /** Shown when the range has no records. */
+  /** Shown when the period has no records. */
   emptyMessage: string;
 };
 
-/** Date range with shortcuts and Print / Share PDF / Share Excel actions. */
-export function TableExportScreen<Row>({
+const INVALID_MESSAGES = {
+  dateRange: {
+    incomplete: 'Elige las dos fechas del rango.',
+    invalidYear: '',
+    reversed: 'La fecha «Desde» es posterior a «Hasta».',
+  },
+  yearRange: {
+    incomplete: 'Escribe los dos años del rango.',
+    invalidYear: 'Año no válido (ejemplo: 2025).',
+    reversed: 'El año «Desde» es posterior a «Hasta».',
+  },
+} as const;
+
+/**
+ * Period (date range or year range, as the table declares) and Print /
+ * Share PDF / Share Excel actions.
+ */
+export function TableExportScreen<Row, P extends PeriodType = 'dateRange'>({
   screenTitle,
   table,
-  count: countInRange,
+  count: countInPeriod,
   load,
   countMessage,
   emptyMessage,
-}: Props<Row>) {
+}: Props<Row, P>) {
   const colors = useThemeColors();
-  const [range, setRange] = useState<OptionalDateRange>(() =>
+  const periodType: PeriodType = table.periodType ?? 'dateRange';
+  const [dateRange, setDateRange] = useState<OptionalDateRange>(() =>
     dateRangePresets[0].range(new Date()),
   );
+  const [yearRange, setYearRange] = useState<YearRangeText>(() => {
+    const year = String(new Date().getFullYear());
+    return { from: year, to: year };
+  });
   const [count, setCount] = useState(0);
   const [busy, setBusy] = useState<Action | null>(null);
 
-  const complete: DateRange | null =
-    range.from && range.to ? { from: range.from, to: range.to } : null;
-  const invalid = complete !== null && complete.from > complete.to;
+  const resolved = useMemo(() => {
+    const input: PeriodInput =
+      periodType === 'yearRange'
+        ? { type: 'yearRange', ...yearRange }
+        : { type: 'dateRange', ...dateRange };
+    return resolvePeriod(input);
+  }, [periodType, dateRange, yearRange]);
+  // resolvePeriod returns the shape that matches the table's period type.
+  const period = resolved.ok ? (resolved.period as PeriodValue<P>) : null;
 
   useFocusEffect(
     useCallback(() => {
-      const { from, to } = range;
-      setCount(from && to && from <= to ? countInRange({ from, to }) : 0);
-    }, [range, countInRange]),
+      setCount(period ? countInPeriod(period) : 0);
+    }, [period, countInPeriod]),
   );
 
   const run = async (action: Action) => {
-    if (!complete || invalid) return;
+    if (!period) return;
     setBusy(action);
     try {
-      const rows = load(complete);
-      const suffix = `${formatDate(complete.from)}_a_${formatDate(complete.to)}`;
+      const rows = load(period);
+      const suffix = periodFileSuffix(period);
       if (action === 'print') await printTable(table, rows);
       if (action === 'pdf') await sharePdf(table, rows, suffix);
       if (action === 'xlsx') await shareXlsx(table, rows, suffix);
@@ -70,18 +98,22 @@ export function TableExportScreen<Row>({
     }
   };
 
-  const disabled = !complete || invalid || count === 0 || busy !== null;
+  const disabled = !period || count === 0 || busy !== null;
+  const invalid = !resolved.ok && resolved.reason !== 'incomplete';
 
   let status: string;
-  if (!complete) status = 'Elige las dos fechas del rango.';
-  else if (invalid) status = 'La fecha «Desde» es posterior a «Hasta».';
+  if (!resolved.ok) status = INVALID_MESSAGES[periodType][resolved.reason];
   else if (count === 0) status = emptyMessage;
   else status = countMessage(count);
 
   return (
     <Screen scroll>
       <Stack.Screen options={{ title: screenTitle }} />
-      <DateRangeField value={range} onChange={setRange} />
+      {periodType === 'yearRange' ? (
+        <YearRangeField value={yearRange} onChange={setYearRange} />
+      ) : (
+        <DateRangeField value={dateRange} onChange={setDateRange} />
+      )}
       <Text style={[styles.status, { color: invalid ? colors.danger : colors.textMuted }]}>
         {status}
       </Text>

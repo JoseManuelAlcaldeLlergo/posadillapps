@@ -104,6 +104,20 @@ describe('buildXlsxBase64', () => {
     });
   });
 
+  it('leaves row heights to Excel by default', () => {
+    expect(sheet['!rows']).toBeUndefined();
+  });
+
+  it('sets the height of data rows only, below the heading and header', () => {
+    const tall = readBack(
+      buildXlsxBase64({ ...sampleTable, heading: ['PLAN DE EJEMPLO'], bodyRowHeight: 40 }, sampleRows),
+    );
+    const rows = tall['!rows'] ?? [];
+    expect(rows[0]?.hpt).toBeUndefined();
+    expect(rows[1]?.hpt).toBeUndefined();
+    expect([rows[2]?.hpt, rows[3]?.hpt, rows[4]?.hpt]).toEqual([40, 40, 40]);
+  });
+
   it('formats dates with the table date separator', () => {
     const slashed = readBack(buildXlsxBase64({ ...sampleTable, dateSeparator: '/' }, sampleRows));
     expect(slashed.A2.v).toBe(45688);

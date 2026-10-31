@@ -17,6 +17,18 @@ export function todayIso(now: Date = new Date()): string {
   return toIsoDate(now);
 }
 
+/** Years accepted when typed by hand. */
+export const MIN_YEAR = 1900;
+export const MAX_YEAR = 2100;
+
+/** `" 2025 "` → `2025`; null if it is not a 4-digit year between MIN_YEAR and MAX_YEAR. */
+export function parseYear(text: string): number | null {
+  const trimmed = text.trim();
+  if (!/^\d{4}$/.test(trimmed)) return null;
+  const year = Number(trimmed);
+  return year >= MIN_YEAR && year <= MAX_YEAR ? year : null;
+}
+
 export type DateRangePreset = {
   id: 'currentYear' | 'previousYear' | 'currentMonth';
   label: string;

@@ -12,3 +12,4 @@ export { SuggestionChips } from './SuggestionChips';
 export { TableExportScreen } from './TableExportScreen';
 export { TextField } from './TextField';
 export { spacing, useThemeColors, type ThemeColors } from './theme';
+export { YearRangeField, type YearRangeText } from './YearRangeField';

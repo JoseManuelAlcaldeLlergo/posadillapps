@@ -1,4 +1,4 @@
-import { dateRangePresets, fromIsoDate, toIsoDate, todayIso } from '../dates';
+import { dateRangePresets, fromIsoDate, parseYear, toIsoDate, todayIso } from '../dates';
 
 function preset(id: string) {
   const found = dateRangePresets.find((p) => p.id === id);
@@ -39,5 +39,21 @@ describe('dateRangePresets', () => {
       from: '2025-12-01',
       to: '2025-12-31',
     });
+  });
+});
+
+describe('parseYear', () => {
+  it('parses 4-digit years, ignoring spaces', () => {
+    expect(parseYear('2025')).toBe(2025);
+    expect(parseYear(' 2013 ')).toBe(2013);
+  });
+
+  it('rejects partial, non-numeric and out-of-range years', () => {
+    expect(parseYear('')).toBeNull();
+    expect(parseYear('20')).toBeNull();
+    expect(parseYear('20a5')).toBeNull();
+    expect(parseYear('2025.5')).toBeNull();
+    expect(parseYear('1899')).toBeNull();
+    expect(parseYear('2101')).toBeNull();
   });
 });
