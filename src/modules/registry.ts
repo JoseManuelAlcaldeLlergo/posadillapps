@@ -2,6 +2,7 @@ import { cleaningDisinfectionModule } from './cleaning-disinfection/module';
 import { feedEntriesModule } from './feed-entries/module';
 import { personalHygieneModule } from './personal-hygiene/module';
 import type { AppModule } from './types';
+import { vehicleCleaningModule } from './vehicle-cleaning/module';
 import { vehicleEntriesModule } from './vehicle-entries/module';
 
 /**
@@ -13,4 +14,5 @@ export const modules: AppModule[] = [
   vehicleEntriesModule,
   personalHygieneModule,
   cleaningDisinfectionModule,
+  vehicleCleaningModule,
 ];
