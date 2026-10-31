@@ -2,7 +2,7 @@
 
 ## Visión
 
-App Android para gestionar los registros de una explotación ganadera desde el móvil. Se construye por módulos: cada módulo es un tipo de registro (una tabla) con su formulario, su listado y su exportación. La v1 incluye dos módulos: **Entradas de alimentos** y **Entrada de vehículos**. Los módulos con especificación propia se detallan en `docs/modulos/`.
+App Android para gestionar los registros de una explotación ganadera desde el móvil. Se construye por módulos: cada módulo es un tipo de registro (una tabla) con su formulario, su listado y su exportación. La v1 incluye tres módulos: **Entradas de alimentos**, **Entrada de vehículos** e **Higiene personal**. Los módulos con especificación propia se detallan en `docs/modulos/`.
 
 ## Alcance de la v1
 
