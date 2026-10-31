@@ -12,18 +12,18 @@ describe('describeLastBackup', () => {
   it('warns when there has never been a backup', () => {
     expect(describeLastBackup(null, now)).toEqual({
       text: 'Nunca has hecho una copia de seguridad',
-      overdue: true,
+      level: 'never',
     });
   });
 
   it.each([
-    [0, 'Última copia: hoy', false],
-    [1, 'Última copia: ayer', false],
-    [12, 'Última copia: hace 12 días', false],
-    [30, 'Última copia: hace 30 días', false],
-    [31, 'Última copia: hace 31 días', true],
-  ])('%p days ago', (days, text, overdue) => {
-    expect(describeLastBackup(daysAgo(days), now)).toEqual({ text, overdue });
+    [0, 'Última copia: hoy', 'ok'],
+    [1, 'Última copia: ayer', 'ok'],
+    [12, 'Última copia: hace 12 días', 'ok'],
+    [30, 'Última copia: hace 30 días', 'ok'],
+    [31, 'Última copia: hace 31 días', 'overdue'],
+  ])('%p days ago', (days, text, level) => {
+    expect(describeLastBackup(daysAgo(days), now)).toEqual({ text, level });
   });
 
   it('counts calendar days, not 24-hour periods', () => {
