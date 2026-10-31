@@ -29,6 +29,20 @@
       "when": 1793403140508,
       "tag": "0003_feed_trucks",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1793404731094,
+      "tag": "0004_farm_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1793404887457,
+      "tag": "0005_personal_hygiene",
+      "breakpoints": true
     }
   ]
 }

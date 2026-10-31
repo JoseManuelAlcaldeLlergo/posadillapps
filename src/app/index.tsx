@@ -29,6 +29,11 @@ export default function HomeScreen() {
         ListFooterComponent={
           <View style={styles.footer}>
             <ListItem
+              title="Ajustes de la explotación"
+              subtitle="Código de explotación y unidades productivas"
+              onPress={() => router.push('/farm-settings')}
+            />
+            <ListItem
               title="Copia de seguridad"
               subtitle="Guardar o restaurar todos los datos"
               onPress={() => router.push('/backup')}
@@ -43,5 +48,5 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   list: { padding: spacing.md, gap: spacing.md },
   empty: { flexGrow: 1, padding: spacing.md, gap: spacing.md },
-  footer: { marginTop: spacing.md },
+  footer: { marginTop: spacing.md, gap: spacing.md },
 });
