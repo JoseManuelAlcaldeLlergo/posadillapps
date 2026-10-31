@@ -20,6 +20,7 @@ Fuera de alcance en v1: iOS, varias explotaciones, usuarios y permisos, sincroni
 | --- | --- | --- |
 | 1 | Entradas de alimentos | En este documento. |
 | 2 | Entrada de vehículos | [modulos/entrada-vehiculos.md](modulos/entrada-vehiculos.md). Registro de bioseguridad; las entradas de alimentos con matrícula generan visitas automáticamente. |
+| 3 | Higiene personal | [modulos/higiene-personal.md](modulos/higiene-personal.md). Plan anual de buenas prácticas de higiene personal, generado cada año desde plantillas de actuación. Usa los Ajustes de la explotación (código de explotación y unidades productivas). |
 
 ## Módulo 1: Entradas de alimentos
 
