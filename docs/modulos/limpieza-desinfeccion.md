@@ -57,11 +57,11 @@ Al elegir un producto en el formulario, se rellenan su periodo de espera y lugar
 - En Excel, la columna FECHA mezcla texto (frecuencias) y fechas reales; la de firma se incluye vacía.
 
 ## Criterios de aceptación
-- [ ] Crear productos favoritos con periodo de espera y lugar por defecto.
-- [ ] Registrar una aplicación en menos de 20 segundos eligiendo un producto favorito.
-- [ ] Usar "Repetir" para registrar la misma aplicación en otra fecha.
-- [ ] Registrar una aplicación habitual ("A diario") y verla al principio de cualquier exportación.
-- [ ] Dejar la fecha de revisión vacía y ver "—" en el PDF.
-- [ ] Exportar a PDF con título y columna de firma vacía, e imprimirlo.
-- [ ] Exportar a Excel el mismo rango.
-- [ ] Los demás módulos siguen funcionando y exportando igual.
+- [x] Crear productos favoritos con periodo de espera y lugar por defecto.
+- [x] Registrar una aplicación en menos de 20 segundos eligiendo un producto favorito.
+- [x] Usar "Repetir" para registrar la misma aplicación en otra fecha.
+- [x] Registrar una aplicación habitual ("A diario") y verla al principio de cualquier exportación.
+- [x] Dejar la fecha de revisión vacía y ver "—" en el PDF.
+- [x] Exportar a PDF con título y columna de firma vacía, e imprimirlo.
+- [x] Exportar a Excel el mismo rango.
+- [x] Los demás módulos siguen funcionando y exportando igual.
