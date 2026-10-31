@@ -1,21 +1,11 @@
 import { router, Stack, useFocusEffect, type Href } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert } from 'react-native';
 
 import { todayIso } from '@/core/dates';
 import { db } from '@/core/db';
 import { formatDate } from '@/core/export/format';
-import {
-  Button,
-  CenteredMessage,
-  confirmAsync,
-  DateField,
-  radius,
-  Screen,
-  spacing,
-  typography,
-  useThemeColors,
-} from '@/core/ui';
+import { Button, CenteredMessage, confirmAsync, DateField, Notice, Screen } from '@/core/ui';
 
 import { VehicleFields, type VehicleFieldValues } from '../components/VehicleFields';
 import {
@@ -46,7 +36,6 @@ function emptyForm(): VisitFormValues {
 }
 
 export default function VisitFormScreen({ visitId, sourceLink }: Props) {
-  const colors = useThemeColors();
   const isEdit = visitId !== undefined;
 
   const [visit] = useState<VehicleVisit | undefined>(() =>
@@ -132,28 +121,31 @@ export default function VisitFormScreen({ visitId, sourceLink }: Props) {
   };
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        <>
+          <Button
+            label={isEdit ? 'Guardar cambios' : 'Guardar'}
+            icon="content-save-outline"
+            onPress={onSave}
+          />
+          {isEdit ? null : (
+            <Button label="Guardar y añadir otro" variant="tonal" onPress={onSaveAndAddAnother} />
+          )}
+        </>
+      }
+    >
       <Stack.Screen options={{ title: isEdit ? 'Editar visita' : 'Nueva visita' }} />
 
-      {lastSaved ? (
-        <View style={[styles.notice, { borderColor: colors.primary }]}>
-          <Text style={{ color: colors.text }}>Guardada: {lastSaved}</Text>
-        </View>
-      ) : null}
+      {lastSaved ? <Notice tone="success" message={`Guardada: ${lastSaved}`} /> : null}
 
       {automatic ? (
-        <View style={[styles.notice, { borderColor: colors.outlineVariant }]}>
-          <Text style={[styles.readOnly, { color: colors.text }]}>
-            {values.plate} · {formatDate(values.date)}
-          </Text>
-          <Text style={{ color: colors.textMuted }}>
-            Visita creada automáticamente. La fecha y la matrícula se cambian desde el registro que
-            la creó, y se borra al borrarlo.
-          </Text>
-          {link ? (
-            <Button label={link.label} variant="outlined" onPress={() => router.push(link.href)} />
-          ) : null}
-        </View>
+        <Notice
+          title={`${values.plate} · ${formatDate(values.date)}`}
+          message="Visita creada automáticamente. La fecha y la matrícula se cambian desde el registro que la creó, y se borra al borrarlo."
+          action={link ? { label: link.label, onPress: () => router.push(link.href) } : undefined}
+        />
       ) : (
         <DateField
           label="Fecha"
@@ -173,20 +165,9 @@ export default function VisitFormScreen({ visitId, sourceLink }: Props) {
         hidePlate={automatic}
       />
 
-      <View style={styles.buttons}>
-        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
-        {!isEdit ? (
-          <Button label="Guardar y añadir otro" variant="outlined" onPress={onSaveAndAddAnother} />
-        ) : automatic ? null : (
-          <Button label="Borrar visita" variant="danger" onPress={onDelete} />
-        )}
-      </View>
+      {isEdit && !automatic ? (
+        <Button label="Borrar visita" variant="dangerText" icon="delete-outline" onPress={onDelete} />
+      ) : null}
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  buttons: { gap: spacing.sm, marginTop: spacing.sm },
-  notice: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4, gap: spacing.sm },
-  readOnly: typography.bodyStrong,
-});

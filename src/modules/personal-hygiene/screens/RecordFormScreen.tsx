@@ -203,7 +203,12 @@ export default function RecordFormScreen({ recordId }: Props) {
   };
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} icon="content-save-outline" onPress={onSave} />
+      }
+    >
       <Stack.Screen options={{ title: isEdit ? 'Editar fila' : 'Nueva fila' }} />
 
       {!isEdit && templates.length > 0 ? (
@@ -258,10 +263,9 @@ export default function RecordFormScreen({ recordId }: Props) {
         />
       ) : null}
 
-      <View style={styles.buttons}>
-        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
-        {isEdit ? <Button label="Borrar fila" variant="danger" onPress={onDelete} /> : null}
-      </View>
+      {isEdit ? (
+        <Button label="Borrar fila" variant="dangerText" icon="delete-outline" onPress={onDelete} />
+      ) : null}
     </Screen>
   );
 }
@@ -271,5 +275,4 @@ const styles = StyleSheet.create({
   label: typography.captionStrong,
   value: typography.body,
   hint: typography.caption,
-  buttons: { gap: spacing.sm, marginTop: spacing.sm },
 });

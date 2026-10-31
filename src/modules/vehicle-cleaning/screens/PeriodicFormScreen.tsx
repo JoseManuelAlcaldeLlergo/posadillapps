@@ -1,17 +1,9 @@
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert } from 'react-native';
 
 import { db } from '@/core/db';
-import {
-  Button,
-  CenteredMessage,
-  confirmAsync,
-  FrequencyField,
-  Screen,
-  spacing,
-  TextField,
-} from '@/core/ui';
+import { Button, CenteredMessage, confirmAsync, FrequencyField, Screen, TextField } from '@/core/ui';
 
 import { CleaningFields } from '../components/CleaningFields';
 import { EMPTY_SUGGESTIONS, loadFormSuggestions, type FormSuggestions } from '../formSuggestions';
@@ -83,7 +75,7 @@ export default function PeriodicFormScreen({ periodicId }: Props) {
   };
 
   return (
-    <Screen scroll>
+    <Screen scroll footer={<Button label="Guardar cambios" icon="content-save-outline" onPress={onSave} />}>
       <Stack.Screen options={{ title: 'Editar limpieza periódica' }} />
 
       <TextField
@@ -120,14 +112,7 @@ export default function PeriodicFormScreen({ periodicId }: Props) {
         error={errors.reviewText}
       />
 
-      <View style={styles.buttons}>
-        <Button label="Guardar cambios" onPress={onSave} />
-        <Button label="Borrar limpieza" variant="danger" onPress={onDelete} />
-      </View>
+      <Button label="Borrar limpieza" variant="dangerText" icon="delete-outline" onPress={onDelete} />
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  buttons: { gap: spacing.sm, marginTop: spacing.sm },
-});

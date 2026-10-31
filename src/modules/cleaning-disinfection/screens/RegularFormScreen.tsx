@@ -1,19 +1,11 @@
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert } from 'react-native';
 
 import { db } from '@/core/db';
 import { FarmCodeRequired, getFarmCode } from '@/core/farm';
 import { findByName } from '@/core/text';
-import {
-  Button,
-  CenteredMessage,
-  Checkbox,
-  confirmAsync,
-  FrequencyField,
-  Screen,
-  spacing,
-} from '@/core/ui';
+import { Button, CenteredMessage, Checkbox, confirmAsync, FrequencyField, Screen } from '@/core/ui';
 
 import { CleaningFields } from '../components/CleaningFields';
 import { FarmCodeInfo } from '../components/FarmCodeInfo';
@@ -24,12 +16,7 @@ import {
   type FormSuggestions,
 } from '../formSuggestions';
 import { createRegular, deleteRegular, getRegular, updateRegular } from '../repository';
-import {
-  toFieldValues,
-  validateRegularForm,
-  type FormErrors,
-  type RegularFormValues,
-} from '../validation';
+import { toFieldValues, validateRegularForm, type FormErrors, type RegularFormValues } from '../validation';
 
 type Props = {
   /** Regular application to edit; omitted to create a new one. */
@@ -98,7 +85,8 @@ export default function RegularFormScreen({ regularId }: Props) {
   }
 
   const { values, farmCode } = form;
-  const offerProduct = values.productName.trim() !== '' && !findByName(suggestions.products, values.productName);
+  const offerProduct =
+    values.productName.trim() !== '' && !findByName(suggestions.products, values.productName);
 
   const change = (changes: Partial<RegularFormValues>) => {
     setForm({ ...form, values: { ...values, ...changes } });
@@ -140,7 +128,12 @@ export default function RegularFormScreen({ regularId }: Props) {
   };
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} icon="content-save-outline" onPress={onSave} />
+      }
+    >
       <Stack.Screen
         options={{ title: isEdit ? 'Editar aplicación habitual' : 'Nueva aplicación habitual' }}
       />
@@ -170,14 +163,14 @@ export default function RegularFormScreen({ regularId }: Props) {
         onChange={(active) => change({ active })}
       />
 
-      <View style={styles.buttons}>
-        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
-        {isEdit ? <Button label="Borrar aplicación habitual" variant="danger" onPress={onDelete} /> : null}
-      </View>
+      {isEdit ? (
+        <Button
+          label="Borrar aplicación habitual"
+          variant="dangerText"
+          icon="delete-outline"
+          onPress={onDelete}
+        />
+      ) : null}
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  buttons: { gap: spacing.sm, marginTop: spacing.sm },
-});

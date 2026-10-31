@@ -93,7 +93,12 @@ export default function ProductFormScreen({ productId }: Props) {
   };
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} icon="content-save-outline" onPress={onSave} />
+      }
+    >
       <Stack.Screen options={{ title: isEdit ? 'Editar producto' : 'Nuevo producto' }} />
 
       <TextField
@@ -133,14 +138,13 @@ export default function ProductFormScreen({ productId }: Props) {
       </View>
 
       <Text style={[styles.hint, { color: colors.textMuted }]}>
-        Se rellenan al elegir el producto en una aplicación. Cambiarlos no modifica las aplicaciones
-        ya registradas.
+        Se rellenan al elegir el producto en una aplicación. Cambiarlos no modifica las aplicaciones ya
+        registradas.
       </Text>
 
-      <View style={styles.buttons}>
-        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
-        {isEdit ? <Button label="Borrar producto" variant="danger" onPress={onDelete} /> : null}
-      </View>
+      {isEdit ? (
+        <Button label="Borrar producto" variant="dangerText" icon="delete-outline" onPress={onDelete} />
+      ) : null}
     </Screen>
   );
 }
@@ -148,5 +152,4 @@ export default function ProductFormScreen({ productId }: Props) {
 const styles = StyleSheet.create({
   group: { gap: spacing.sm },
   hint: typography.caption,
-  buttons: { gap: spacing.sm, marginTop: spacing.sm },
 });

@@ -16,12 +16,7 @@ import {
   loadFormSuggestions,
   type FormSuggestions,
 } from '../formSuggestions';
-import {
-  createApplication,
-  deleteApplication,
-  getApplication,
-  updateApplication,
-} from '../repository';
+import { createApplication, deleteApplication, getApplication, updateApplication } from '../repository';
 import {
   toFieldValues,
   validateApplicationForm,
@@ -105,7 +100,8 @@ export default function ApplicationFormScreen({ applicationId, repeatId }: Props
   }
 
   const { values, farmCode } = form;
-  const offerProduct = values.productName.trim() !== '' && !findByName(suggestions.products, values.productName);
+  const offerProduct =
+    values.productName.trim() !== '' && !findByName(suggestions.products, values.productName);
 
   const change = (changes: Partial<ApplicationFormValues>) => {
     setForm({ ...form, values: { ...values, ...changes } });
@@ -152,10 +148,19 @@ export default function ApplicationFormScreen({ applicationId, repeatId }: Props
     router.back();
   };
 
-  const title = isEdit ? 'Editar aplicación' : repeatId !== undefined ? 'Repetir aplicación' : 'Nueva aplicación';
+  const title = isEdit
+    ? 'Editar aplicación'
+    : repeatId !== undefined
+      ? 'Repetir aplicación'
+      : 'Nueva aplicación';
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} icon="content-save-outline" onPress={onSave} />
+      }
+    >
       <Stack.Screen options={{ title }} />
 
       <DateField
@@ -176,15 +181,12 @@ export default function ApplicationFormScreen({ applicationId, repeatId }: Props
         onSaveProductChange={setSaveProduct}
       />
 
-      <View style={styles.buttons}>
-        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
-        {isEdit ? (
-          <>
-            <Button label="Repetir con fecha de hoy" variant="outlined" onPress={onRepeat} />
-            <Button label="Borrar aplicación" variant="danger" onPress={onDelete} />
-          </>
-        ) : null}
-      </View>
+      {isEdit ? (
+        <View style={styles.buttons}>
+          <Button label="Repetir con fecha de hoy" variant="outlined" icon="repeat" onPress={onRepeat} />
+          <Button label="Borrar aplicación" variant="dangerText" icon="delete-outline" onPress={onDelete} />
+        </View>
+      ) : null}
     </Screen>
   );
 }
