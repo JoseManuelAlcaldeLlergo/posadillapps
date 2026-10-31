@@ -10,12 +10,11 @@ import {
   Button,
   CenteredMessage,
   Checkbox,
-  Chip,
-  ChipRow,
   confirmAsync,
   DateField,
-  radius,
+  Notice,
   Screen,
+  SegmentedControl,
   spacing,
   SuggestionChips,
   TextField,
@@ -172,14 +171,28 @@ export default function EntryFormScreen({ entryId }: Props) {
   };
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        <>
+          <Button
+            label={isEdit ? 'Guardar cambios' : 'Guardar'}
+            icon="content-save-outline"
+            onPress={onSave}
+          />
+          {isEdit ? null : (
+            <Button
+              label="Guardar y añadir otro de la misma factura"
+              variant="tonal"
+              onPress={onSaveAndAddAnother}
+            />
+          )}
+        </>
+      }
+    >
       <Stack.Screen options={{ title: isEdit ? 'Editar entrada' : 'Nueva entrada' }} />
 
-      {lastSaved ? (
-        <View style={[styles.notice, { borderColor: colors.primary }]}>
-          <Text style={{ color: colors.text }}>Guardada: {lastSaved}</Text>
-        </View>
-      ) : null}
+      {lastSaved ? <Notice tone="success" message={`Guardada: ${lastSaved}`} /> : null}
 
       <DateField
         label="Fecha"
@@ -198,16 +211,12 @@ export default function EntryFormScreen({ entryId }: Props) {
           example="9.340"
           error={errors.quantity}
         />
-        <ChipRow>
-          {FEED_UNITS.map((unit) => (
-            <Chip
-              key={unit}
-              label={unit}
-              selected={values.unit === unit}
-              onPress={() => set('unit', unit)}
-            />
-          ))}
-        </ChipRow>
+        <SegmentedControl
+          accessibilityLabel="Unidad"
+          options={FEED_UNITS.map((unit) => ({ value: unit, label: unit }))}
+          value={values.unit}
+          onChange={(unit) => set('unit', unit)}
+        />
       </View>
 
       <View style={styles.group}>
@@ -302,25 +311,14 @@ export default function EntryFormScreen({ entryId }: Props) {
         ) : null}
       </View>
 
-      <View style={styles.buttons}>
-        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
-        {isEdit ? (
-          <Button label="Borrar entrada" variant="danger" onPress={onDelete} />
-        ) : (
-          <Button
-            label="Guardar y añadir otro de la misma factura"
-            variant="outlined"
-            onPress={onSaveAndAddAnother}
-          />
-        )}
-      </View>
+      {isEdit ? (
+        <Button label="Borrar entrada" variant="dangerText" icon="delete-outline" onPress={onDelete} />
+      ) : null}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   group: { gap: spacing.sm },
-  buttons: { gap: spacing.sm, marginTop: spacing.sm },
-  notice: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4 },
   hint: typography.caption,
 });

@@ -254,7 +254,7 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
       </View>
 
       <View style={styles.danger}>
-        <Button label="Borrar proveedor" variant="danger" onPress={onDeleteSupplier} />
+        <Button label="Borrar proveedor" variant="dangerText" icon="delete-outline" onPress={onDeleteSupplier} />
       </View>
     </Screen>
   );

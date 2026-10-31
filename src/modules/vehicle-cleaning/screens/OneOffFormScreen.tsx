@@ -9,12 +9,7 @@ import { Button, CenteredMessage, confirmAsync, DateField, Screen, spacing, Text
 import { CleaningFields } from '../components/CleaningFields';
 import { EMPTY_SUGGESTIONS, loadFormSuggestions, type FormSuggestions } from '../formSuggestions';
 import { createOneOff, deleteOneOff, getOneOff, updateOneOff } from '../repository';
-import {
-  toFieldValues,
-  validateOneOffForm,
-  type FormErrors,
-  type OneOffFormValues,
-} from '../validation';
+import { toFieldValues, validateOneOffForm, type FormErrors, type OneOffFormValues } from '../validation';
 
 type Props = {
   /** Cleaning to edit; omitted to create a new one. */
@@ -100,7 +95,12 @@ export default function OneOffFormScreen({ oneOffId, repeatId }: Props) {
       : 'Nueva limpieza puntual';
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} icon="content-save-outline" onPress={onSave} />
+      }
+    >
       <Stack.Screen options={{ title }} />
 
       <DateField
@@ -128,15 +128,12 @@ export default function OneOffFormScreen({ oneOffId, repeatId }: Props) {
         error={errors.reviewText}
       />
 
-      <View style={styles.buttons}>
-        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
-        {isEdit ? (
-          <>
-            <Button label="Repetir con fecha de hoy" variant="outlined" onPress={onRepeat} />
-            <Button label="Borrar limpieza" variant="danger" onPress={onDelete} />
-          </>
-        ) : null}
-      </View>
+      {isEdit ? (
+        <View style={styles.buttons}>
+          <Button label="Repetir con fecha de hoy" variant="outlined" icon="repeat" onPress={onRepeat} />
+          <Button label="Borrar limpieza" variant="dangerText" icon="delete-outline" onPress={onDelete} />
+        </View>
+      ) : null}
     </Screen>
   );
 }

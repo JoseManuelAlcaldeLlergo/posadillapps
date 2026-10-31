@@ -1,6 +1,6 @@
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text } from 'react-native';
 
 import { db } from '@/core/db';
 import {
@@ -9,7 +9,6 @@ import {
   Checkbox,
   confirmAsync,
   Screen,
-  spacing,
   typography,
   useThemeColors,
 } from '@/core/ui';
@@ -112,7 +111,12 @@ export default function TemplateFormScreen({ templateId }: Props) {
   };
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} icon="content-save-outline" onPress={onSave} />
+      }
+    >
       <Stack.Screen options={{ title: isEdit ? 'Editar plantilla' : 'Nueva plantilla' }} />
 
       <Text style={[styles.hint, { color: colors.textMuted }]}>
@@ -133,15 +137,13 @@ export default function TemplateFormScreen({ templateId }: Props) {
         onChange={(active) => change({ active })}
       />
 
-      <View style={styles.buttons}>
-        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
-        {isEdit ? <Button label="Borrar plantilla" variant="danger" onPress={onDelete} /> : null}
-      </View>
+      {isEdit ? (
+        <Button label="Borrar plantilla" variant="dangerText" icon="delete-outline" onPress={onDelete} />
+      ) : null}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   hint: typography.caption,
-  buttons: { gap: spacing.sm, marginTop: spacing.sm },
 });

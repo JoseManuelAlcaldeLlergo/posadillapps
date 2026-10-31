@@ -4,12 +4,15 @@ import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import type { IconName } from './categories';
 import { radius, spacing, typography, useThemeColors, type ThemeColors } from './theme';
 
-type Variant = 'filled' | 'tonal' | 'outlined' | 'text' | 'danger';
+type Variant = 'filled' | 'tonal' | 'outlined' | 'text' | 'danger' | 'dangerText';
 
 type Props = {
   label: string;
   onPress: () => void;
-  /** `filled` for the main action, `tonal` or `outlined` for the others, `danger` to delete. */
+  /**
+   * `filled` for the main action, `tonal` or `outlined` for the others,
+   * `dangerText` to delete at the end of a form, `danger` for a destructive action that must stand out.
+   */
   variant?: Variant;
   icon?: IconName;
   disabled?: boolean;
@@ -32,6 +35,8 @@ function variantColors(colors: ThemeColors, variant: Variant) {
       return { background: 'transparent', content: colors.primary, border: 'transparent' };
     case 'danger':
       return { background: 'transparent', content: colors.danger, border: colors.danger };
+    case 'dangerText':
+      return { background: 'transparent', content: colors.danger, border: 'transparent' };
   }
 }
 

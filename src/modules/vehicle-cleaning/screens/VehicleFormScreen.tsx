@@ -1,17 +1,9 @@
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert } from 'react-native';
 
 import { db } from '@/core/db';
-import {
-  Button,
-  CenteredMessage,
-  Checkbox,
-  confirmAsync,
-  FrequencyField,
-  Screen,
-  spacing,
-} from '@/core/ui';
+import { Button, CenteredMessage, Checkbox, confirmAsync, FrequencyField, Screen } from '@/core/ui';
 
 import { CleaningFields } from '../components/CleaningFields';
 import { EMPTY_SUGGESTIONS, loadFormSuggestions, type FormSuggestions } from '../formSuggestions';
@@ -97,7 +89,12 @@ export default function VehicleFormScreen({ vehicleId }: Props) {
   };
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} icon="content-save-outline" onPress={onSave} />
+      }
+    >
       <Stack.Screen options={{ title: isEdit ? 'Editar vehículo' : 'Nuevo vehículo' }} />
 
       <CleaningFields
@@ -121,14 +118,9 @@ export default function VehicleFormScreen({ vehicleId }: Props) {
         onChange={(active) => change({ active })}
       />
 
-      <View style={styles.buttons}>
-        <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
-        {isEdit ? <Button label="Borrar vehículo" variant="danger" onPress={onDelete} /> : null}
-      </View>
+      {isEdit ? (
+        <Button label="Borrar vehículo" variant="dangerText" icon="delete-outline" onPress={onDelete} />
+      ) : null}
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  buttons: { gap: spacing.sm, marginTop: spacing.sm },
-});
