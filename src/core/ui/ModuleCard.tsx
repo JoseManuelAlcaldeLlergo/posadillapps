@@ -21,14 +21,8 @@ export function ModuleCard({ title, subtitle, icon, category, onPress }: Props) 
       accessibilityRole="button"
       accessibilityLabel={subtitle ? `${title}. ${subtitle}` : title}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.card,
-        {
-          backgroundColor: colors.surface,
-          borderColor: colors.outlineVariant,
-          opacity: pressed ? 0.7 : 1,
-        },
-      ]}
+      android_ripple={{ color: colors.ripple }}
+      style={[styles.card, { backgroundColor: colors.surfaceContainer }]}
     >
       <View style={[styles.iconBox, { backgroundColor: container }]}>
         <MaterialCommunityIcons name={icon} size={26} color={accent} />
@@ -49,10 +43,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     minHeight: 48,
+    overflow: 'hidden',
   },
   iconBox: {
     width: 44,

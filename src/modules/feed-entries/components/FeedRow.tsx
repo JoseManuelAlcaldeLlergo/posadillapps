@@ -40,7 +40,7 @@ export function FeedRow({ name, onRename, onDelete }: Props) {
           <View style={styles.button}>
             <Button
               label="Cancelar"
-              variant="secondary"
+              variant="outlined"
               onPress={() => {
                 setDraft(name);
                 setError(undefined);
@@ -63,7 +63,7 @@ export function FeedRow({ name, onRename, onDelete }: Props) {
         <View style={styles.button}>
           <Button
             label="Renombrar"
-            variant="secondary"
+            variant="outlined"
             onPress={() => {
               setDraft(name);
               setEditing(true);

@@ -160,7 +160,7 @@ export default function BackupScreen({ modules }: Props) {
         </Text>
         <Button
           label="Elegir archivo de copia"
-          variant="secondary"
+          variant="outlined"
           onPress={onRestore}
           loading={busy === 'restore'}
           disabled={busy !== null}

@@ -92,14 +92,14 @@ export default function CleaningListScreen() {
         <View style={styles.action}>
           <Button
             label="Nueva habitual"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/cleaning-disinfection/regulars/new')}
           />
         </View>
         <View style={styles.action}>
           <Button
             label="Exportar"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/cleaning-disinfection/export')}
           />
         </View>
@@ -195,7 +195,7 @@ export default function CleaningListScreen() {
                   }
                 />
               </View>
-              <Button label="Repetir" variant="secondary" onPress={() => repeat(item.application.id)} />
+              <Button label="Repetir" variant="outlined" onPress={() => repeat(item.application.id)} />
             </View>
           )
         }

@@ -89,14 +89,14 @@ export default function CleaningListScreen() {
         <View style={styles.action}>
           <Button
             label="Generar año"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/vehicle-cleaning/generate')}
           />
         </View>
         <View style={styles.action}>
           <Button
             label="Exportar"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/vehicle-cleaning/export')}
           />
         </View>
@@ -189,7 +189,7 @@ export default function CleaningListScreen() {
                   }
                 />
               </View>
-              <Button label="Repetir" variant="secondary" onPress={() => repeat(item.cleaning.id)} />
+              <Button label="Repetir" variant="outlined" onPress={() => repeat(item.cleaning.id)} />
             </View>
           )
         }

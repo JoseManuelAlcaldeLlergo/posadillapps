@@ -8,9 +8,14 @@ type Props = {
   children: ReactNode;
   /** Scrollable padded content, for forms. */
   scroll?: boolean;
+  /**
+   * A `Fab`, placed at the bottom right over the content. Lists add
+   * `FAB_CLEARANCE` to their bottom padding so it does not cover the last item.
+   */
+  fab?: ReactNode;
 };
 
-export function Screen({ children, scroll }: Props) {
+export function Screen({ children, scroll, fab }: Props) {
   const colors = useThemeColors();
   return (
     <SafeAreaView
@@ -27,6 +32,7 @@ export function Screen({ children, scroll }: Props) {
       ) : (
         <View style={styles.root}>{children}</View>
       )}
+      {fab ? <View style={styles.fab}>{fab}</View> : null}
     </SafeAreaView>
   );
 }
@@ -34,4 +40,5 @@ export function Screen({ children, scroll }: Props) {
 const styles = StyleSheet.create({
   root: { flex: 1 },
   scrollContent: { padding: spacing.md, gap: spacing.md },
+  fab: { position: 'absolute', right: spacing.md, bottom: spacing.md },
 });

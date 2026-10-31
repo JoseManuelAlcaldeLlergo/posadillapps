@@ -1,4 +1,13 @@
-import { dateRangePresets, fromIsoDate, parseYear, toIsoDate, todayIso } from '../dates';
+import {
+  dateRangePresets,
+  fromIsoDate,
+  groupByMonth,
+  monthAbbreviation,
+  monthTitle,
+  parseYear,
+  toIsoDate,
+  todayIso,
+} from '../dates';
 
 function preset(id: string) {
   const found = dateRangePresets.find((p) => p.id === id);
@@ -55,5 +64,38 @@ describe('parseYear', () => {
     expect(parseYear('2025.5')).toBeNull();
     expect(parseYear('1899')).toBeNull();
     expect(parseYear('2101')).toBeNull();
+  });
+});
+
+describe('monthTitle / monthAbbreviation', () => {
+  it('names the month and year in Spanish', () => {
+    expect(monthTitle('2026-10-23')).toBe('Octubre 2026');
+    expect(monthTitle('2025-01-01')).toBe('Enero 2025');
+  });
+
+  it('abbreviates the month in lower case', () => {
+    expect(monthAbbreviation('2026-10-23')).toBe('oct');
+    expect(monthAbbreviation('2026-05-02')).toBe('may');
+    expect(monthAbbreviation('2026-09-30')).toBe('sept');
+  });
+});
+
+describe('groupByMonth', () => {
+  const entry = (id: number, date: string) => ({ id, date });
+
+  it('groups consecutive items of the same month, keeping their order', () => {
+    const sections = groupByMonth(
+      [entry(1, '2026-10-23'), entry(2, '2026-10-01'), entry(3, '2026-09-30'), entry(4, '2025-09-12')],
+      (item) => item.date,
+    );
+    expect(sections.map((s) => [s.key, s.title, s.data.map((item) => item.id)])).toEqual([
+      ['2026-10', 'Octubre 2026', [1, 2]],
+      ['2026-09', 'Septiembre 2026', [3]],
+      ['2025-09', 'Septiembre 2025', [4]],
+    ]);
+  });
+
+  it('returns no sections for no items', () => {
+    expect(groupByMonth([], (item: { date: string }) => item.date)).toEqual([]);
   });
 });

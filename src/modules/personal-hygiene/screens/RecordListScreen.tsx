@@ -75,21 +75,21 @@ export default function RecordListScreen() {
         <View style={styles.action}>
           <Button
             label="Añadir fila"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/personal-hygiene/new')}
           />
         </View>
         <View style={styles.action}>
           <Button
             label="Exportar"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/personal-hygiene/export')}
           />
         </View>
       </View>
       <Button
         label="Plantillas de actuación"
-        variant="secondary"
+        variant="outlined"
         onPress={() => router.push('/personal-hygiene/templates')}
       />
       <ChipRow>

@@ -211,7 +211,7 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
           onSubmitEditing={onAddFeed}
           error={feedError}
         />
-        <Button label="Añadir pienso" variant="secondary" onPress={onAddFeed} />
+        <Button label="Añadir pienso" variant="outlined" onPress={onAddFeed} />
       </View>
 
       <Text style={[styles.section, { color: colors.text }]}>Camiones habituales</Text>
@@ -250,7 +250,7 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
           onSubmitEditing={onAddTruck}
           error={truckError}
         />
-        <Button label="Añadir camión" variant="secondary" onPress={onAddTruck} />
+        <Button label="Añadir camión" variant="outlined" onPress={onAddTruck} />
       </View>
 
       <View style={styles.danger}>

@@ -52,14 +52,14 @@ export default function EntryListScreen() {
         <View style={styles.action}>
           <Button
             label="Exportar"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/feed-entries/export')}
           />
         </View>
         <View style={styles.action}>
           <Button
             label="Proveedores"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/feed-entries/suppliers')}
           />
         </View>

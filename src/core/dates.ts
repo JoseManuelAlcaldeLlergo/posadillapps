@@ -59,3 +59,49 @@ export const dateRangePresets: DateRangePreset[] = [
 function yearRange(year: number): DateRange {
   return { from: `${year}-01-01`, to: `${year}-12-31` };
 }
+
+const MONTH_NAMES = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+];
+
+/** `2026-10-23` → `Octubre 2026`. */
+export function monthTitle(iso: string): string {
+  const [year, month] = iso.split('-').map(Number);
+  return `${MONTH_NAMES[month - 1]} ${year}`;
+}
+
+/** `2026-10-23` → `oct`. Septiembre is `sept`, as the RAE abbreviates it. */
+export function monthAbbreviation(iso: string): string {
+  const month = Number(iso.split('-')[1]);
+  return month === 9 ? 'sept' : MONTH_NAMES[month - 1].slice(0, 3).toLowerCase();
+}
+
+export type MonthSection<T> = { key: string; title: string; data: T[] };
+
+/**
+ * Splits items already sorted by date into one section per month
+ * (`Octubre 2026`), keeping their order. A month that appears again after
+ * another one starts a new section.
+ */
+export function groupByMonth<T>(items: readonly T[], getIsoDate: (item: T) => string): MonthSection<T>[] {
+  const sections: MonthSection<T>[] = [];
+  for (const item of items) {
+    const iso = getIsoDate(item);
+    const key = iso.slice(0, 7);
+    const last = sections[sections.length - 1];
+    if (last?.key === key) last.data.push(item);
+    else sections.push({ key, title: monthTitle(iso), data: [item] });
+  }
+  return sections;
+}

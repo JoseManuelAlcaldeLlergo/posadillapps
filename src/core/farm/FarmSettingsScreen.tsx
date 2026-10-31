@@ -148,7 +148,7 @@ export default function FarmSettingsScreen() {
           onSubmitEditing={onAddUnit}
           error={unitError}
         />
-        <Button label="Añadir unidad productiva" variant="secondary" onPress={onAddUnit} />
+        <Button label="Añadir unidad productiva" variant="outlined" onPress={onAddUnit} />
       </View>
     </Screen>
   );

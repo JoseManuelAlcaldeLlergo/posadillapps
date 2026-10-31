@@ -67,14 +67,14 @@ export default function VehicleListScreen() {
         <View style={styles.action}>
           <Button
             label="Nuevo habitual"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/vehicle-entries/regulars/new')}
           />
         </View>
         <View style={styles.action}>
           <Button
             label="Exportar"
-            variant="secondary"
+            variant="outlined"
             onPress={() => router.push('/vehicle-entries/export')}
           />
         </View>
@@ -165,6 +165,7 @@ export default function VehicleListScreen() {
               title={`${formatDate(item.visit.date)} · ${item.visit.plate}`}
               subtitle={`${VEHICLE_TYPE_LABELS[item.visit.vehicleType]} — ${item.visit.reason}`}
               badge={isAutomatic(item.visit) ? 'Automática' : undefined}
+              badgeTone="primary"
               onPress={() =>
                 router.push({
                   pathname: '/vehicle-entries/visits/[id]',

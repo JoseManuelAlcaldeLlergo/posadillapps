@@ -151,7 +151,7 @@ export default function VisitFormScreen({ visitId, sourceLink }: Props) {
             la creó, y se borra al borrarlo.
           </Text>
           {link ? (
-            <Button label={link.label} variant="secondary" onPress={() => router.push(link.href)} />
+            <Button label={link.label} variant="outlined" onPress={() => router.push(link.href)} />
           ) : null}
         </View>
       ) : (
@@ -176,7 +176,7 @@ export default function VisitFormScreen({ visitId, sourceLink }: Props) {
       <View style={styles.buttons}>
         <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
         {!isEdit ? (
-          <Button label="Guardar y añadir otro" variant="secondary" onPress={onSaveAndAddAnother} />
+          <Button label="Guardar y añadir otro" variant="outlined" onPress={onSaveAndAddAnother} />
         ) : automatic ? null : (
           <Button label="Borrar visita" variant="danger" onPress={onDelete} />
         )}
