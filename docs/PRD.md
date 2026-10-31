@@ -95,3 +95,4 @@ Ejemplos reales: proveedor "Mezclas del Valle" con piensos "Cerdos crecimiento",
 - [ ] Hacer copia de seguridad, borrar la app, reinstalar y restaurar sin pérdida de datos.
 - [ ] La app funciona sin conexión.
 - [ ] Se cumplen los criterios de aceptación de [Entrada de vehículos](modulos/entrada-vehiculos.md#criterios-de-aceptación).
+- [ ] Se cumplen los criterios de aceptación de [Higiene personal](modulos/higiene-personal.md#criterios-de-aceptación).
