@@ -57,10 +57,10 @@ Si el código de explotación no está configurado, el módulo pide configurarlo
 - En Excel, la columna de firma se incluye vacía para mantener el formato del papel.
 
 ## Criterios de aceptación
-- [ ] Configurar el código de explotación y las unidades productivas en Ajustes.
-- [ ] Crear varias plantillas de actuación con `{año}` en Resultado y Fecha.
-- [ ] Generar un año completo en menos de 30 segundos, revisando las filas antes de guardar.
-- [ ] Intentar generar el mismo año otra vez sin que se dupliquen filas.
-- [ ] Exportar un rango de años a PDF con el título, la columna de firma vacía y espacio para firmar, e imprimirlo.
-- [ ] Exportar a Excel el mismo rango.
-- [ ] Los módulos de alimentos y vehículos siguen exportando igual tras los cambios en el motor.
+- [x] Configurar el código de explotación y las unidades productivas en Ajustes.
+- [x] Crear varias plantillas de actuación con `{año}` en Resultado y Fecha.
+- [x] Generar un año completo en menos de 30 segundos, revisando las filas antes de guardar.
+- [x] Intentar generar el mismo año otra vez sin que se dupliquen filas.
+- [x] Exportar un rango de años a PDF con el título, la columna de firma vacía y espacio para firmar, e imprimirlo.
+- [x] Exportar a Excel el mismo rango.
+- [x] Los módulos de alimentos y vehículos siguen exportando igual tras los cambios en el motor.
