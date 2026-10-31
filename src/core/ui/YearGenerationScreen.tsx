@@ -5,9 +5,10 @@ import { Alert, StyleSheet, Text, View } from 'react-native';
 import { parseYear } from '../dates';
 import type { YearPreview } from '../yearGeneration';
 import { Button } from './Button';
-import { CenteredMessage } from './CenteredMessage';
 import { Checkbox } from './Checkbox';
-import { Chip, ChipRow } from './Chip';
+import { ActionChip, ChipRow } from './Chip';
+import { EmptyState } from './EmptyState';
+import { Notice } from './Notice';
 import { Screen } from './Screen';
 import { TextField } from './TextField';
 import { radius, spacing, typography, useThemeColors } from './theme';
@@ -146,32 +147,24 @@ export function YearGenerationScreen<Source, Row, Values>({
     );
   } else if (preview && preview.rows.length === 0 && preview.skipped.length === 0) {
     content = (
-      <View style={styles.empty}>
-        <CenteredMessage title={empty.title} message={empty.message} />
-        <Button
-          label={empty.actionLabel}
-          variant="outlined"
-          onPress={() => router.push(empty.actionRoute)}
-        />
-      </View>
+      <EmptyState
+        icon="calendar-sync"
+        title={empty.title}
+        message={empty.message}
+        action={{ label: empty.actionLabel, onPress: () => router.push(empty.actionRoute) }}
+      />
     );
   } else {
     content = (
       <>
         {preview && preview.skipped.length > 0 ? (
-          <View style={[styles.notice, { borderColor: colors.primary }]}>
-            <Text style={{ color: colors.text }}>
-              Ya existen filas de {year} para: {preview.skipped.map(sourceName).join(', ')}. Se
-              omiten.
-            </Text>
-          </View>
+          <Notice
+            message={`Ya existen filas de ${year} para: ${preview.skipped.map(sourceName).join(', ')}. Se omiten.`}
+          />
         ) : null}
 
         {drafts.map((draft, index) => (
-          <View
-            key={rowKey(draft.row)}
-            style={[styles.card, { borderColor: colors.outlineVariant, backgroundColor: colors.surface }]}
-          >
+          <View key={rowKey(draft.row)} style={[styles.card, { backgroundColor: colors.surfaceContainer }]}>
             <Checkbox
               label={rowTitle(draft.values)}
               checked={draft.include}
@@ -193,9 +186,9 @@ export function YearGenerationScreen<Source, Row, Values>({
                   </Text>
                 )}
                 <ChipRow>
-                  <Chip
+                  <ActionChip
                     label={draft.expanded ? 'Cerrar' : 'Editar'}
-                    selected={draft.expanded}
+                    icon={draft.expanded ? 'chevron-up' : 'pencil-outline'}
                     onPress={() => updateDraft(index, { expanded: !draft.expanded })}
                   />
                 </ChipRow>
@@ -203,20 +196,24 @@ export function YearGenerationScreen<Source, Row, Values>({
             ) : null}
           </View>
         ))}
-
-        {drafts.length > 0 ? (
-          <Button
-            label={`Guardar ${rowCount(included.length)} de ${year}`}
-            onPress={onSave}
-            disabled={included.length === 0}
-          />
-        ) : null}
       </>
     );
   }
 
   return (
-    <Screen scroll>
+    <Screen
+      scroll
+      footer={
+        year !== null && drafts.length > 0 ? (
+          <Button
+            label={`Guardar ${rowCount(included.length)} de ${year}`}
+            icon="content-save-outline"
+            onPress={onSave}
+            disabled={included.length === 0}
+          />
+        ) : undefined
+      }
+    >
       <Stack.Screen options={{ title: 'Generar año' }} />
       <TextField
         label="Año"
@@ -233,13 +230,10 @@ export function YearGenerationScreen<Source, Row, Values>({
 
 const styles = StyleSheet.create({
   hint: typography.caption,
-  notice: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4 },
   card: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.sm,
   },
   summary: typography.caption,
-  empty: { gap: spacing.md },
 });

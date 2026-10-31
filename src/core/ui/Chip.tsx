@@ -12,10 +12,12 @@ type Props = {
   label: string;
   selected?: boolean;
   onPress: () => void;
+  /** Shows a check when selected. Off for short rows that must fit on one line. */
+  check?: boolean;
 };
 
 /** Choice or filter: selected ones are tonal and show a check. */
-export function Chip({ label, selected, onPress }: Props) {
+export function Chip({ label, selected, onPress, check = true }: Props) {
   const colors = useThemeColors();
   return (
     <Pressable
@@ -31,7 +33,7 @@ export function Chip({ label, selected, onPress }: Props) {
           : { backgroundColor: colors.surface, borderColor: colors.outlineVariant },
       ]}
     >
-      {selected ? (
+      {selected && check ? (
         <MaterialCommunityIcons name="check" size={18} color={colors.onPrimaryContainer} />
       ) : null}
       <Text style={[styles.label, { color: selected ? colors.onPrimaryContainer : colors.text }]}>

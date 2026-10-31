@@ -51,6 +51,7 @@ export function YearRangeField({ value, onChange, now = new Date() }: Props) {
             key={preset.label}
             label={preset.label}
             selected={value.from.trim() === preset.year && value.to.trim() === preset.year}
+            check={false}
             onPress={() => onChange({ from: preset.year, to: preset.year })}
           />
         ))}
