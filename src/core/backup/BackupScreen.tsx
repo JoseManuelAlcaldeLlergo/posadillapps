@@ -7,7 +7,7 @@ import { db } from '../db';
 import { formatDate } from '../export/format';
 import { describeLastBackup } from '../settings/lastBackup';
 import { getLastBackupAt, setLastBackupAt } from '../settings/repository';
-import { Button, confirmAsync, Screen, spacing, useThemeColors } from '../ui';
+import { Button, confirmAsync, radius, Screen, spacing, typography, useThemeColors } from '../ui';
 import { createBackup, describeBackup, parseBackupFile, restoreBackup, serializeBackup } from './backup';
 import {
   deleteSafetyCopy,
@@ -188,6 +188,6 @@ export default function BackupScreen({ modules }: Props) {
 
 const styles = StyleSheet.create({
   section: { gap: spacing.sm },
-  heading: { fontSize: 18, fontWeight: '600' },
-  note: { borderWidth: 1, borderRadius: 8, padding: spacing.sm + 4, marginTop: spacing.sm },
+  heading: typography.heading,
+  note: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4, marginTop: spacing.sm },
 });

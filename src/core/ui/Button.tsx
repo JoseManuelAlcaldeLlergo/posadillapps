@@ -1,6 +1,6 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 
-import { spacing, useThemeColors } from './theme';
+import { radius, spacing, typography, useThemeColors } from './theme';
 
 type Props = {
   label: string;
@@ -42,11 +42,11 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading 
 const styles = StyleSheet.create({
   button: {
     minHeight: 48,
-    borderRadius: 8,
+    borderRadius: radius.sm,
     borderWidth: 1.5,
     paddingHorizontal: spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  label: { fontSize: 16, fontWeight: '600', textAlign: 'center' },
+  label: { ...typography.bodyStrong, textAlign: 'center' },
 });

@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 import { db } from '../db';
 import { describeLastBackup, type LastBackupStatus } from '../settings/lastBackup';
 import { getLastBackupAt } from '../settings/repository';
-import { spacing, useThemeColors } from '../ui';
+import { radius, spacing, typography, useThemeColors } from '../ui';
 
 /** Home banner with the date of the last backup; highlighted when overdue. */
 export function BackupReminder() {
@@ -43,6 +43,6 @@ export function BackupReminder() {
 }
 
 const styles = StyleSheet.create({
-  banner: { borderWidth: 1, borderRadius: 8, padding: spacing.sm + 4 },
-  text: { fontSize: 14, fontWeight: '600' },
+  banner: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4 },
+  text: typography.captionStrong,
 });

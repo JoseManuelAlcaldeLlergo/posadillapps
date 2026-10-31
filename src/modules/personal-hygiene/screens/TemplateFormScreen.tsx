@@ -10,6 +10,7 @@ import {
   confirmAsync,
   Screen,
   spacing,
+  typography,
   useThemeColors,
 } from '@/core/ui';
 
@@ -141,6 +142,6 @@ export default function TemplateFormScreen({ templateId }: Props) {
 }
 
 const styles = StyleSheet.create({
-  hint: { fontSize: 13 },
+  hint: typography.caption,
   buttons: { gap: spacing.sm, marginTop: spacing.sm },
 });

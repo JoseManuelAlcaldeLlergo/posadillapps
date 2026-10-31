@@ -10,7 +10,7 @@ import type { PeriodType, PeriodValue, TableDefinition } from '../export/types';
 import { Button } from './Button';
 import { DateRangeField, type OptionalDateRange } from './DateRangeField';
 import { Screen } from './Screen';
-import { spacing, useThemeColors } from './theme';
+import { spacing, typography, useThemeColors } from './theme';
 import { YearRangeField, type YearRangeText } from './YearRangeField';
 
 type Action = 'print' | 'pdf' | 'xlsx';
@@ -144,6 +144,6 @@ export function TableExportScreen<Row, P extends PeriodType = 'dateRange'>({
 }
 
 const styles = StyleSheet.create({
-  status: { fontSize: 15 },
+  status: typography.body,
   buttons: { gap: spacing.sm },
 });

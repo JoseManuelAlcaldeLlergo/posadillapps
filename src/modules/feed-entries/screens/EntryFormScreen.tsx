@@ -14,10 +14,12 @@ import {
   ChipRow,
   confirmAsync,
   DateField,
+  radius,
   Screen,
   spacing,
   SuggestionChips,
   TextField,
+  typography,
   useThemeColors,
 } from '@/core/ui';
 
@@ -319,6 +321,6 @@ export default function EntryFormScreen({ entryId }: Props) {
 const styles = StyleSheet.create({
   group: { gap: spacing.sm },
   buttons: { gap: spacing.sm, marginTop: spacing.sm },
-  notice: { borderWidth: 1, borderRadius: 8, padding: spacing.sm + 4 },
-  hint: { fontSize: 13 },
+  notice: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4 },
+  hint: typography.caption,
 });

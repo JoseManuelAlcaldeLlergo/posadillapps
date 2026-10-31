@@ -16,6 +16,7 @@ import {
   Screen,
   spacing,
   TextField,
+  typography,
   useThemeColors,
 } from '@/core/ui';
 
@@ -267,8 +268,8 @@ export default function RecordFormScreen({ recordId }: Props) {
 
 const styles = StyleSheet.create({
   group: { gap: spacing.xs },
-  label: { fontSize: 14, fontWeight: '600' },
-  value: { fontSize: 16 },
-  hint: { fontSize: 13 },
+  label: typography.captionStrong,
+  value: typography.body,
+  hint: typography.caption,
   buttons: { gap: spacing.sm, marginTop: spacing.sm },
 });

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { spacing, useThemeColors } from '@/core/ui';
+import { spacing, typography, useThemeColors } from '@/core/ui';
 
 type Props = {
   farmCode: string;
@@ -26,7 +26,7 @@ export function FarmCodeInfo({ farmCode, isEdit }: Props) {
 
 const styles = StyleSheet.create({
   group: { gap: spacing.xs },
-  label: { fontSize: 14, fontWeight: '600' },
-  value: { fontSize: 16 },
-  hint: { fontSize: 13 },
+  label: typography.captionStrong,
+  value: typography.body,
+  hint: typography.caption,
 });

@@ -10,8 +10,10 @@ import {
   Chip,
   ChipRow,
   ListItem,
+  radius,
   Screen,
   spacing,
+  typography,
   useThemeColors,
 } from '@/core/ui';
 
@@ -194,10 +196,10 @@ const styles = StyleSheet.create({
   header: { gap: spacing.sm, marginBottom: spacing.sm },
   actions: { flexDirection: 'row', gap: spacing.sm },
   action: { flex: 1 },
-  notice: { borderWidth: 1, borderRadius: 8, padding: spacing.sm + 4, gap: spacing.sm },
-  filters: { borderWidth: 1, borderRadius: 12, padding: spacing.md, gap: spacing.md },
+  notice: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4, gap: spacing.sm },
+  filters: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.md },
   filter: { gap: spacing.xs },
-  filterLabel: { fontSize: 14, fontWeight: '600' },
-  sectionTitle: { fontSize: 16, fontWeight: '700', marginTop: spacing.md, marginBottom: spacing.sm },
+  filterLabel: typography.captionStrong,
+  sectionTitle: { ...typography.bodyStrong, marginTop: spacing.md, marginBottom: spacing.sm },
   item: { marginBottom: spacing.sm },
 });

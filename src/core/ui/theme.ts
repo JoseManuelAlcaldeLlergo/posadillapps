@@ -16,6 +16,8 @@ const light = {
   success: '#2E6B3F',
   // The logo is dark blue on white in both modes, like the launcher icon
   logoBackground: '#FFFFFF',
+  // Backdrop behind modals
+  scrim: 'rgba(0, 0, 0, 0.4)',
   category: {
     feed: { accent: '#9A5B00', container: '#FBEBD0' },
     biosecurity: { accent: '#1F5FA8', container: '#DCE8F7' },
@@ -35,6 +37,7 @@ const dark: typeof light = {
   warning: '#F5C26B',
   success: '#7CC48F',
   logoBackground: '#FFFFFF',
+  scrim: 'rgba(0, 0, 0, 0.4)',
   category: {
     feed: { accent: '#F2B866', container: '#3A2A12' },
     biosecurity: { accent: '#9CC3F0', container: '#172A40' },
@@ -49,7 +52,7 @@ export function useThemeColors(): ThemeColors {
   return useColorScheme() === 'dark' ? dark : light;
 }
 
-export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 } as const;
+export const spacing = { xxs: 2, xs: 4, sm: 8, md: 16, lg: 24, xl: 32 } as const;
 
 export const radius = { sm: 8, md: 12, pill: 999 } as const;
 
@@ -57,6 +60,8 @@ export const typography = {
   title: { fontSize: 22, fontWeight: '700' },
   heading: { fontSize: 18, fontWeight: '600' },
   body: { fontSize: 16, fontWeight: '400' },
+  bodyStrong: { fontSize: 16, fontWeight: '600' },
   caption: { fontSize: 14, fontWeight: '400' },
+  captionStrong: { fontSize: 14, fontWeight: '600' },
   label: { fontSize: 12, fontWeight: '600' },
 } as const;

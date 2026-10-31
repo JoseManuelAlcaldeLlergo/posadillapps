@@ -1,7 +1,7 @@
 import type { ComponentRef, Ref } from 'react';
 import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 
-import { spacing, useThemeColors } from './theme';
+import { radius, spacing, typography, useThemeColors } from './theme';
 
 type Props = TextInputProps & {
   label: string;
@@ -39,14 +39,14 @@ export function TextField({ label, error, optional, style, ref, ...inputProps }:
 
 const styles = StyleSheet.create({
   root: { gap: spacing.xs },
-  label: { fontSize: 14, fontWeight: '600' },
+  label: typography.captionStrong,
   input: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: radius.sm,
     paddingHorizontal: spacing.sm + 4,
     paddingVertical: spacing.sm,
-    fontSize: 16,
+    ...typography.body,
     minHeight: 48,
   },
-  error: { fontSize: 13 },
+  error: typography.caption,
 });

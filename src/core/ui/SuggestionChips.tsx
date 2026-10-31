@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { nameKey } from '../text';
 import { Chip, ChipRow } from './Chip';
-import { spacing, useThemeColors } from './theme';
+import { spacing, typography, useThemeColors } from './theme';
 
 type Suggestion = { id: number | string; name: string };
 
@@ -51,5 +51,5 @@ export function SuggestionChips<T extends Suggestion>({
 
 const styles = StyleSheet.create({
   root: { gap: spacing.xs },
-  label: { fontSize: 13 },
+  label: typography.caption,
 });

@@ -7,9 +7,11 @@ import {
   Button,
   CenteredMessage,
   confirmAsync,
+  radius,
   Screen,
   spacing,
   TextField,
+  typography,
   useThemeColors,
 } from '@/core/ui';
 
@@ -260,16 +262,16 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
 
 const styles = StyleSheet.create({
   group: { gap: spacing.sm },
-  hint: { fontSize: 13 },
-  section: { fontSize: 18, fontWeight: '600', marginTop: spacing.sm },
+  hint: typography.caption,
+  section: { ...typography.heading, marginTop: spacing.sm },
   danger: { marginTop: spacing.lg },
   truck: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 12,
+    borderRadius: radius.md,
     padding: spacing.md,
   },
-  truckPlate: { flex: 1, fontSize: 16, fontWeight: '600' },
+  truckPlate: { flex: 1, ...typography.bodyStrong },
 });

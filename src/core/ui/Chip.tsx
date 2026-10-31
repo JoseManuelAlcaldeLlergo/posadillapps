@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { spacing, useThemeColors } from './theme';
+import { radius, spacing, typography, useThemeColors } from './theme';
 
 type Props = {
   label: string;
@@ -37,11 +37,11 @@ export function ChipRow({ children }: { children: ReactNode }) {
 const styles = StyleSheet.create({
   chip: {
     minHeight: 40,
-    borderRadius: 20,
+    borderRadius: radius.pill,
     borderWidth: 1,
     paddingHorizontal: spacing.md,
     justifyContent: 'center',
   },
-  label: { fontSize: 15 },
+  label: typography.body,
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });

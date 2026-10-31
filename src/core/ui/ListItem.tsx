@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { spacing, useThemeColors } from './theme';
+import { radius, spacing, typography, useThemeColors } from './theme';
 
 type Props = {
   title: string;
@@ -43,19 +43,18 @@ export function ListItem({ title, subtitle, badge, onPress }: Props) {
 const styles = StyleSheet.create({
   card: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 12,
+    borderRadius: radius.md,
     padding: spacing.md,
     gap: spacing.xs,
   },
   titleRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: spacing.sm },
-  title: { fontSize: 18, fontWeight: '600', flexShrink: 1 },
+  title: { ...typography.heading, flexShrink: 1 },
   badge: {
-    fontSize: 12,
-    fontWeight: '600',
+    ...typography.label,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: spacing.xxs,
   },
-  subtitle: { fontSize: 14 },
+  subtitle: typography.caption,
 });

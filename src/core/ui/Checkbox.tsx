@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { spacing, useThemeColors } from './theme';
+import { radius, spacing, typography, useThemeColors } from './theme';
 
 type Props = {
   label: string;
@@ -38,11 +38,11 @@ const styles = StyleSheet.create({
   box: {
     width: 24,
     height: 24,
-    borderRadius: 4,
+    borderRadius: radius.sm,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tick: { fontSize: 16, fontWeight: '700', lineHeight: 18 },
-  label: { fontSize: 15, flexShrink: 1 },
+  tick: typography.bodyStrong,
+  label: { ...typography.body, flexShrink: 1 },
 });
