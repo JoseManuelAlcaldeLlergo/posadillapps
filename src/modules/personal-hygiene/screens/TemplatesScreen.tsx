@@ -1,13 +1,13 @@
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text } from 'react-native';
 
 import { db } from '@/core/db';
 import {
-  Button,
-  CenteredMessage,
-  Chip,
-  ChipRow,
+  ActionChip,
+  EmptyState,
+  Fab,
+  FAB_CLEARANCE,
   ListItem,
   Screen,
   spacing,
@@ -15,6 +15,7 @@ import {
   useThemeColors,
 } from '@/core/ui';
 
+import { personalHygieneModule } from '../module';
 import type { HygieneTemplate } from '../schema';
 import { YEAR_PLACEHOLDER } from '../templates';
 import { listTemplates, moveTemplate } from '../templatesRepository';
@@ -30,60 +31,59 @@ export default function TemplatesScreen() {
     moveTemplate(db, template.id, direction);
     reload();
   };
+  const newTemplate = () => router.push('/personal-hygiene/templates/new');
 
   return (
-    <Screen>
+    <Screen fab={<Fab label="Nueva plantilla" onPress={newTemplate} />}>
       <Stack.Screen options={{ title: 'Plantillas de actuación' }} />
       <FlatList
         data={templates}
         keyExtractor={(template) => String(template.id)}
         contentContainerStyle={styles.list}
         ListHeaderComponent={
-          <View style={styles.header}>
-            <Button
-              label="Nueva plantilla"
-              onPress={() => router.push('/personal-hygiene/templates/new')}
-            />
-            <Text style={[styles.hint, { color: colors.textMuted }]}>
+          templates.length > 0 ? (
+            <Text style={[typography.caption, { color: colors.textMuted }]}>
               Al generar un año se crea una fila por cada plantilla activa, en este orden, con «
-              {YEAR_PLACEHOLDER}» sustituido por el año. Editar una plantilla no cambia las filas ya
-              creadas.
+              {YEAR_PLACEHOLDER}» sustituido por el año. Editar una plantilla no cambia las filas ya creadas.
             </Text>
-          </View>
+          ) : undefined
         }
         renderItem={({ item, index }) => (
-          <View style={styles.item}>
-            <ListItem
-              title={item.action}
-              badge={item.active ? undefined : 'Inactiva'}
-              subtitle={[
-                `${item.productiveUnit} · ${item.place}`,
-                `${item.result} · ${item.dateText}`,
-                item.correctiveMeasures ? `Medidas correctoras: ${item.correctiveMeasures}` : null,
-              ]
-                .filter(Boolean)
-                .join('\n')}
-              onPress={() =>
-                router.push({
-                  pathname: '/personal-hygiene/templates/[id]',
-                  params: { id: String(item.id) },
-                })
-              }
-            />
-            {templates.length > 1 ? (
-              <ChipRow>
-                {index > 0 ? <Chip label="Subir" onPress={() => onMove(item, -1)} /> : null}
-                {index < templates.length - 1 ? (
-                  <Chip label="Bajar" onPress={() => onMove(item, 1)} />
-                ) : null}
-              </ChipRow>
-            ) : null}
-          </View>
+          <ListItem
+            title={item.action}
+            badge={item.active ? undefined : 'Inactiva'}
+            lines={[
+              `${item.productiveUnit} · ${item.place}`,
+              `${item.result} · ${item.dateText}`,
+              item.correctiveMeasures ? `Medidas correctoras: ${item.correctiveMeasures}` : null,
+            ]}
+            actions={
+              templates.length > 1 ? (
+                <>
+                  {index > 0 ? (
+                    <ActionChip label="Subir" icon="arrow-up" onPress={() => onMove(item, -1)} />
+                  ) : null}
+                  {index < templates.length - 1 ? (
+                    <ActionChip label="Bajar" icon="arrow-down" onPress={() => onMove(item, 1)} />
+                  ) : null}
+                </>
+              ) : undefined
+            }
+            onPress={() =>
+              router.push({
+                pathname: '/personal-hygiene/templates/[id]',
+                params: { id: String(item.id) },
+              })
+            }
+          />
         )}
         ListEmptyComponent={
-          <CenteredMessage
+          <EmptyState
+            icon="file-document-multiple-outline"
+            tone={colors.category[personalHygieneModule.category]}
             title="Todavía no hay plantillas"
             message="Crea una por cada actuación que se repite cada año."
+            action={{ label: 'Nueva plantilla', icon: 'plus', onPress: newTemplate }}
           />
         }
       />
@@ -92,8 +92,5 @@ export default function TemplatesScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: spacing.md, gap: spacing.md },
-  header: { gap: spacing.sm },
-  hint: typography.caption,
-  item: { gap: spacing.xs },
+  list: { padding: spacing.md, paddingBottom: FAB_CLEARANCE, gap: spacing.sm },
 });

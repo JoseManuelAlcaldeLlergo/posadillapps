@@ -2,16 +2,21 @@ import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { SectionList, StyleSheet, Text, View } from 'react-native';
 
+import { groupByMonth } from '@/core/dates';
 import { db } from '@/core/db';
-import { formatDate } from '@/core/export/format';
 import {
-  Button,
+  ActionChip,
   Chip,
-  ChipRow,
+  DateBadge,
   DateRangeField,
+  EmptyState,
+  Fab,
+  FAB_CLEARANCE,
+  FilterGroup,
   ListItem,
-  radius,
+  ListToolbar,
   Screen,
+  SectionHeader,
   spacing,
   typography,
   useThemeColors,
@@ -19,20 +24,22 @@ import {
 } from '@/core/ui';
 
 import { plateKey } from '../../vehicle-entries';
+import { vehicleCleaningModule } from '../module';
 import { listOneOffs, listPeriodic, usedPlates } from '../repository';
 import type { OneOffCleaning, PeriodicCleaning } from '../schema';
 
-type Item =
-  | { kind: 'periodic'; cleaning: PeriodicCleaning }
-  | { kind: 'oneOff'; cleaning: OneOffCleaning };
+type Item = { kind: 'periodic'; cleaning: PeriodicCleaning } | { kind: 'oneOff'; cleaning: OneOffCleaning };
 type Section = { key: string; title: string; empty?: string; data: Item[] };
 
-function details(cleaning: PeriodicCleaning | OneOffCleaning): string {
-  return `${cleaning.vehicleType} — ${cleaning.productName}`;
-}
-
-/** One section per year of periodic cleanings (newest first), then the one-off cleanings. */
-function buildSections(periodic: PeriodicCleaning[], oneOffs: OneOffCleaning[], filtered: boolean): Section[] {
+/**
+ * One section per year of periodic cleanings (newest first), then the
+ * one-off cleanings month by month.
+ */
+function buildSections(
+  periodic: PeriodicCleaning[],
+  oneOffs: OneOffCleaning[],
+  filtered: boolean,
+): Section[] {
   const byYear = new Map<number, Item[]>();
   for (const cleaning of periodic) {
     const items = byYear.get(cleaning.year) ?? [];
@@ -45,16 +52,18 @@ function buildSections(periodic: PeriodicCleaning[], oneOffs: OneOffCleaning[], 
     title: `Limpiezas periódicas ${year}`,
     data,
   }));
+  const monthSections: Section[] = groupByMonth(oneOffs, (cleaning) => cleaning.date).map((month) => ({
+    key: month.key,
+    title: `Limpiezas puntuales · ${month.title}`,
+    data: month.data.map((cleaning) => ({ kind: 'oneOff' as const, cleaning })),
+  }));
   return [
     ...(yearSections.length > 0
       ? yearSections
       : [{ key: 'periodic', title: 'Limpiezas periódicas', empty, data: [] }]),
-    {
-      key: 'oneOffs',
-      title: 'Limpiezas puntuales',
-      empty,
-      data: oneOffs.map((cleaning) => ({ kind: 'oneOff' as const, cleaning })),
-    },
+    ...(monthSections.length > 0
+      ? monthSections
+      : [{ key: 'oneOffs', title: 'Limpiezas puntuales', empty, data: [] }]),
   ];
 }
 
@@ -77,77 +86,67 @@ export default function CleaningListScreen() {
   );
 
   const activeFilters = (range.from || range.to ? 1 : 0) + (plate ? 1 : 0);
-  const sections = buildSections(periodic, oneOffs, activeFilters > 0);
-
+  const nothing = periodic.length === 0 && oneOffs.length === 0;
+  const sections = nothing ? [] : buildSections(periodic, oneOffs, activeFilters > 0);
+  const newOneOff = () => router.push('/vehicle-cleaning/one-offs/new');
   const repeat = (id: number) =>
     router.push({ pathname: '/vehicle-cleaning/one-offs/new', params: { repeat: String(id) } });
 
   const header = (
-    <View style={styles.header}>
-      <Button label="Nueva limpieza puntual" onPress={() => router.push('/vehicle-cleaning/one-offs/new')} />
-      <View style={styles.actions}>
-        <View style={styles.action}>
-          <Button
+    <ListToolbar
+      actions={
+        <>
+          <ActionChip
             label="Generar año"
-            variant="outlined"
+            icon="calendar-sync"
             onPress={() => router.push('/vehicle-cleaning/generate')}
           />
-        </View>
-        <View style={styles.action}>
-          <Button
+          <ActionChip
             label="Exportar"
-            variant="outlined"
+            icon="file-export-outline"
             onPress={() => router.push('/vehicle-cleaning/export')}
           />
-        </View>
-      </View>
-      <ChipRow>
-        <Chip label="Vehículos periódicos" onPress={() => router.push('/vehicle-cleaning/vehicles')} />
-        <Chip
-          label={activeFilters ? `Filtros (${activeFilters})` : 'Filtros'}
-          selected={showFilters}
-          onPress={() => setShowFilters(!showFilters)}
-        />
-        {activeFilters ? (
-          <Chip
-            label="Quitar filtros"
-            onPress={() => {
-              setRange({ from: null, to: null });
-              setPlate(null);
-            }}
+          <ActionChip
+            label="Vehículos periódicos"
+            icon="car-outline"
+            onPress={() => router.push('/vehicle-cleaning/vehicles')}
           />
-        ) : null}
-      </ChipRow>
-      {showFilters ? (
-        <View style={[styles.filters, { borderColor: colors.outlineVariant }]}>
+        </>
+      }
+      activeFilters={activeFilters}
+      filtersOpen={showFilters}
+      onToggleFilters={() => setShowFilters(!showFilters)}
+      onClearFilters={() => {
+        setRange({ from: null, to: null });
+        setPlate(null);
+      }}
+      filters={
+        <>
           <DateRangeField value={range} onChange={setRange} optional />
-          <Text style={[styles.hint, { color: colors.textMuted }]}>
+          <Text style={[typography.caption, { color: colors.textMuted }]}>
             Las limpiezas periódicas se filtran por los años del rango.
           </Text>
-          <View style={styles.plateFilter}>
-            <Text style={[styles.filterLabel, { color: colors.text }]}>Matrícula</Text>
-            <ChipRow>
-              <Chip label="Todas" selected={!plate} onPress={() => setPlate(null)} />
-              {plates.map((name) => {
-                const selected = plate !== null && plateKey(plate) === plateKey(name);
-                return (
-                  <Chip
-                    key={name}
-                    label={name}
-                    selected={selected}
-                    onPress={() => setPlate(selected ? null : name)}
-                  />
-                );
-              })}
-            </ChipRow>
-          </View>
-        </View>
-      ) : null}
-    </View>
+          <FilterGroup label="Matrícula">
+            <Chip label="Todas" selected={!plate} onPress={() => setPlate(null)} />
+            {plates.map((name) => {
+              const selected = plate !== null && plateKey(plate) === plateKey(name);
+              return (
+                <Chip
+                  key={name}
+                  label={name}
+                  selected={selected}
+                  onPress={() => setPlate(selected ? null : name)}
+                />
+              );
+            })}
+          </FilterGroup>
+        </>
+      }
+    />
   );
 
   return (
-    <Screen>
+    <Screen fab={<Fab label="Nueva limpieza puntual" onPress={newOneOff} />}>
       <Stack.Screen options={{ title: 'Limpieza de vehículos' }} />
       <SectionList
         sections={sections}
@@ -155,9 +154,7 @@ export default function CleaningListScreen() {
         contentContainerStyle={styles.list}
         ListHeaderComponent={header}
         stickySectionHeadersEnabled={false}
-        renderSectionHeader={({ section }) => (
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
-        )}
+        renderSectionHeader={({ section }) => <SectionHeader title={section.title} />}
         renderSectionFooter={({ section }) =>
           section.data.length === 0 && section.empty ? (
             <Text style={[styles.sectionEmpty, { color: colors.textMuted }]}>{section.empty}</Text>
@@ -166,8 +163,8 @@ export default function CleaningListScreen() {
         renderItem={({ item }) =>
           item.kind === 'periodic' ? (
             <ListItem
-              title={`${item.cleaning.plate} · ${item.cleaning.frequency}`}
-              subtitle={details(item.cleaning)}
+              title={item.cleaning.plate}
+              lines={[`${item.cleaning.frequency} · ${item.cleaning.productName}`, item.cleaning.vehicleType]}
               onPress={() =>
                 router.push({
                   pathname: '/vehicle-cleaning/periodic/[id]',
@@ -176,21 +173,32 @@ export default function CleaningListScreen() {
               }
             />
           ) : (
-            <View style={styles.row}>
-              <View style={styles.rowItem}>
-                <ListItem
-                  title={`${formatDate(item.cleaning.date)} · ${item.cleaning.plate}`}
-                  subtitle={details(item.cleaning)}
-                  onPress={() =>
-                    router.push({
-                      pathname: '/vehicle-cleaning/one-offs/[id]',
-                      params: { id: String(item.cleaning.id) },
-                    })
-                  }
-                />
-              </View>
-              <Button label="Repetir" variant="outlined" onPress={() => repeat(item.cleaning.id)} />
-            </View>
+            <ListItem
+              leading={<DateBadge date={item.cleaning.date} />}
+              title={item.cleaning.plate}
+              lines={[item.cleaning.productName, item.cleaning.vehicleType]}
+              actions={<ActionChip label="Repetir" icon="repeat" onPress={() => repeat(item.cleaning.id)} />}
+              onPress={() =>
+                router.push({
+                  pathname: '/vehicle-cleaning/one-offs/[id]',
+                  params: { id: String(item.cleaning.id) },
+                })
+              }
+            />
+          )
+        }
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ListEmptyComponent={
+          activeFilters ? (
+            <EmptyState icon="filter-off-outline" title="No hay limpiezas con estos filtros" />
+          ) : (
+            <EmptyState
+              icon={vehicleCleaningModule.icon}
+              tone={colors.category[vehicleCleaningModule.category]}
+              title="Todavía no hay limpiezas"
+              message="Da de alta los vehículos periódicos y genera el año, o apunta una limpieza puntual."
+              action={{ label: 'Nueva limpieza puntual', icon: 'plus', onPress: newOneOff }}
+            />
           )
         }
       />
@@ -199,16 +207,7 @@ export default function CleaningListScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: spacing.md, gap: spacing.sm },
-  header: { gap: spacing.sm, marginBottom: spacing.sm },
-  actions: { flexDirection: 'row', gap: spacing.sm },
-  action: { flex: 1 },
-  filters: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.md },
-  hint: typography.caption,
-  plateFilter: { gap: spacing.xs },
-  filterLabel: typography.captionStrong,
-  sectionTitle: { ...typography.bodyStrong, marginTop: spacing.md },
+  list: { padding: spacing.md, paddingBottom: FAB_CLEARANCE },
+  separator: { height: spacing.sm },
   sectionEmpty: typography.caption,
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  rowItem: { flex: 1 },
 });

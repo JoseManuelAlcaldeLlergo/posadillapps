@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { db } from '@/core/db';
-import { Button, CenteredMessage, ListItem, Screen, spacing, TextField } from '@/core/ui';
+import { Button, EmptyState, ListItem, Screen, spacing, TextField, useThemeColors } from '@/core/ui';
 
 import {
   createSupplier,
@@ -11,6 +11,7 @@ import {
   listSuppliersWithFeeds,
   type SupplierWithFeeds,
 } from '../favoritesRepository';
+import { feedEntriesModule } from '../module';
 
 function feedCount(count: number): string {
   if (count === 0) return 'Sin piensos habituales';
@@ -18,6 +19,7 @@ function feedCount(count: number): string {
 }
 
 export default function SuppliersScreen() {
+  const colors = useThemeColors();
   const [suppliers, setSuppliers] = useState<SupplierWithFeeds[]>([]);
   const [name, setName] = useState('');
   const [error, setError] = useState<string | undefined>();
@@ -64,7 +66,7 @@ export default function SuppliersScreen() {
               onSubmitEditing={onAdd}
               error={error}
             />
-            <Button label="Añadir proveedor" variant="outlined" onPress={onAdd} />
+            <Button label="Añadir proveedor" icon="plus" variant="tonal" onPress={onAdd} />
           </View>
         }
         renderItem={({ item }) => (
@@ -80,9 +82,11 @@ export default function SuppliersScreen() {
           />
         )}
         ListEmptyComponent={
-          <CenteredMessage
+          <EmptyState
+            icon="truck-outline"
+            tone={colors.category[feedEntriesModule.category]}
             title="No hay proveedores favoritos"
-            message="Añádelos aquí o marca «Guardar como favorito» al registrar una entrada."
+            message="Añádelos arriba o marca «Guardar como favorito» al registrar una entrada."
           />
         }
       />

@@ -1,10 +1,11 @@
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 
 import { db } from '@/core/db';
-import { Button, CenteredMessage, ListItem, Screen, spacing } from '@/core/ui';
+import { EmptyState, Fab, FAB_CLEARANCE, ListItem, Screen, spacing, useThemeColors } from '@/core/ui';
 
+import { cleaningDisinfectionModule } from '../module';
 import { listProducts } from '../productsRepository';
 import type { CleaningProduct } from '../schema';
 import { formatWaitingDays } from '../waitingPeriod';
@@ -15,25 +16,20 @@ function defaults(product: CleaningProduct): string {
 }
 
 export default function ProductsScreen() {
+  const colors = useThemeColors();
   const [products, setProducts] = useState<CleaningProduct[]>([]);
 
   useFocusEffect(useCallback(() => setProducts(listProducts(db)), []));
 
+  const newProduct = () => router.push('/cleaning-disinfection/products/new');
+
   return (
-    <Screen>
+    <Screen fab={<Fab label="Nuevo producto" onPress={newProduct} />}>
       <Stack.Screen options={{ title: 'Productos favoritos' }} />
       <FlatList
         data={products}
         keyExtractor={(product) => String(product.id)}
         contentContainerStyle={styles.list}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Button
-              label="Nuevo producto"
-              onPress={() => router.push('/cleaning-disinfection/products/new')}
-            />
-          </View>
-        }
         renderItem={({ item }) => (
           <ListItem
             title={item.name}
@@ -47,9 +43,12 @@ export default function ProductsScreen() {
           />
         )}
         ListEmptyComponent={
-          <CenteredMessage
+          <EmptyState
+            icon="flask-outline"
+            tone={colors.category[cleaningDisinfectionModule.category]}
             title="No hay productos favoritos"
             message="Añádelos aquí o marca «Guardar como producto favorito» al registrar una aplicación."
+            action={{ label: 'Nuevo producto', icon: 'plus', onPress: newProduct }}
           />
         }
       />
@@ -58,6 +57,5 @@ export default function ProductsScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: spacing.md, gap: spacing.sm },
-  header: { marginBottom: spacing.sm },
+  list: { padding: spacing.md, paddingBottom: FAB_CLEARANCE, gap: spacing.sm },
 });
