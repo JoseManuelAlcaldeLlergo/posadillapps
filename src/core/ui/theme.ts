@@ -14,6 +14,8 @@ const light = {
   danger: '#B3261E',
   warning: '#8A5A00',
   success: '#2E6B3F',
+  // The logo is dark blue on white in both modes, like the launcher icon
+  logoBackground: '#FFFFFF',
   category: {
     feed: { accent: '#9A5B00', container: '#FBEBD0' },
     biosecurity: { accent: '#1F5FA8', container: '#DCE8F7' },
@@ -32,6 +34,7 @@ const dark: typeof light = {
   danger: '#F2B8B5',
   warning: '#F5C26B',
   success: '#7CC48F',
+  logoBackground: '#FFFFFF',
   category: {
     feed: { accent: '#F2B866', container: '#3A2A12' },
     biosecurity: { accent: '#9CC3F0', container: '#172A40' },
