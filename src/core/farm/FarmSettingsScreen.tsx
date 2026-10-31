@@ -8,9 +8,11 @@ import {
   Chip,
   ChipRow,
   confirmAsync,
+  radius,
   Screen,
   spacing,
   TextField,
+  typography,
   useThemeColors,
 } from '../ui';
 import {
@@ -154,13 +156,13 @@ export default function FarmSettingsScreen() {
 
 const styles = StyleSheet.create({
   section: { gap: spacing.sm },
-  title: { fontSize: 18, fontWeight: '600' },
-  hint: { fontSize: 13 },
+  title: typography.heading,
+  hint: typography.caption,
   unit: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 12,
+    borderRadius: radius.md,
     padding: spacing.md,
     gap: spacing.sm,
   },
-  unitName: { fontSize: 16, fontWeight: '600' },
+  unitName: typography.bodyStrong,
 });

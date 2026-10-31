@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Button, spacing, TextField, useThemeColors } from '@/core/ui';
+import { Button, radius, spacing, TextField, typography, useThemeColors } from '@/core/ui';
 
 type Props = {
   name: string;
@@ -81,11 +81,11 @@ export function FeedRow({ name, onRename, onDelete }: Props) {
 const styles = StyleSheet.create({
   card: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 12,
+    borderRadius: radius.md,
     padding: spacing.md,
     gap: spacing.sm,
   },
-  name: { fontSize: 16, fontWeight: '600' },
+  name: typography.bodyStrong,
   buttons: { flexDirection: 'row', gap: spacing.sm },
   button: { flex: 1 },
 });

@@ -11,6 +11,7 @@ import {
   spacing,
   SuggestionChips,
   TextField,
+  typography,
   useThemeColors,
 } from '@/core/ui';
 
@@ -146,6 +147,6 @@ export default function ProductFormScreen({ productId }: Props) {
 
 const styles = StyleSheet.create({
   group: { gap: spacing.sm },
-  hint: { fontSize: 13 },
+  hint: typography.caption,
   buttons: { gap: spacing.sm, marginTop: spacing.sm },
 });

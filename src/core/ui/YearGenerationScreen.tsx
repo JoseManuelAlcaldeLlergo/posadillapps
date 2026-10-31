@@ -10,7 +10,7 @@ import { Checkbox } from './Checkbox';
 import { Chip, ChipRow } from './Chip';
 import { Screen } from './Screen';
 import { TextField } from './TextField';
-import { spacing, useThemeColors } from './theme';
+import { radius, spacing, typography, useThemeColors } from './theme';
 
 type Errors<Values> = Partial<Record<keyof Values, string>>;
 
@@ -232,14 +232,14 @@ export function YearGenerationScreen<Source, Row, Values>({
 }
 
 const styles = StyleSheet.create({
-  hint: { fontSize: 13 },
-  notice: { borderWidth: 1, borderRadius: 8, padding: spacing.sm + 4 },
+  hint: typography.caption,
+  notice: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4 },
   card: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 12,
+    borderRadius: radius.md,
     padding: spacing.md,
     gap: spacing.sm,
   },
-  summary: { fontSize: 14 },
+  summary: typography.caption,
   empty: { gap: spacing.md },
 });

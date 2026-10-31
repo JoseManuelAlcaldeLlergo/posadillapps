@@ -10,8 +10,10 @@ import {
   CenteredMessage,
   confirmAsync,
   DateField,
+  radius,
   Screen,
   spacing,
+  typography,
   useThemeColors,
 } from '@/core/ui';
 
@@ -185,6 +187,6 @@ export default function VisitFormScreen({ visitId, sourceLink }: Props) {
 
 const styles = StyleSheet.create({
   buttons: { gap: spacing.sm, marginTop: spacing.sm },
-  notice: { borderWidth: 1, borderRadius: 8, padding: spacing.sm + 4, gap: spacing.sm },
-  readOnly: { fontSize: 16, fontWeight: '600' },
+  notice: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4, gap: spacing.sm },
+  readOnly: typography.bodyStrong,
 });

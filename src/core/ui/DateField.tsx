@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { fromIsoDate, toIsoDate } from '../dates';
 import { formatDate } from '../export/format';
-import { spacing, useThemeColors } from './theme';
+import { radius, spacing, typography, useThemeColors } from './theme';
 
 type Props = {
   label: string;
@@ -68,18 +68,18 @@ export function DateField({ label, value, onChange, error, placeholder, clearabl
 
 const styles = StyleSheet.create({
   root: { gap: spacing.xs },
-  label: { fontSize: 14, fontWeight: '600' },
+  label: typography.captionStrong,
   row: { flexDirection: 'row', alignItems: 'center' },
   field: {
     flex: 1,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: radius.sm,
     paddingHorizontal: spacing.sm + 4,
     minHeight: 48,
     justifyContent: 'center',
   },
-  value: { fontSize: 16 },
+  value: typography.body,
   clear: { width: 40, height: 48, alignItems: 'center', justifyContent: 'center' },
-  clearText: { fontSize: 18 },
-  error: { fontSize: 13 },
+  clearText: { fontSize: typography.heading.fontSize },
+  error: typography.caption,
 });

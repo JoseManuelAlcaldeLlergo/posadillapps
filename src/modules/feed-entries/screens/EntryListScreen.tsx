@@ -11,8 +11,10 @@ import {
   ChipRow,
   DateRangeField,
   ListItem,
+  radius,
   Screen,
   spacing,
+  typography,
   useThemeColors,
   type OptionalDateRange,
 } from '@/core/ui';
@@ -150,8 +152,8 @@ const styles = StyleSheet.create({
   header: { gap: spacing.sm, marginBottom: spacing.sm },
   actions: { flexDirection: 'row', gap: spacing.sm },
   action: { flex: 1 },
-  filters: { borderWidth: 1, borderRadius: 12, padding: spacing.md, gap: spacing.md },
+  filters: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.md },
   supplierFilter: { gap: spacing.xs },
-  filterLabel: { fontSize: 14, fontWeight: '600' },
-  visitFilter: { borderWidth: 1, borderRadius: 8, padding: spacing.sm + 4, gap: spacing.sm },
+  filterLabel: typography.captionStrong,
+  visitFilter: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4, gap: spacing.sm },
 });

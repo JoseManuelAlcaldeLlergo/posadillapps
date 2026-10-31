@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { spacing, useThemeColors } from './theme';
+import { spacing, typography, useThemeColors } from './theme';
 
 type Props = {
   title: string;
@@ -30,6 +30,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.sm,
   },
-  title: { fontSize: 18, fontWeight: '600', textAlign: 'center' },
-  message: { fontSize: 14, textAlign: 'center' },
+  title: { ...typography.heading, textAlign: 'center' },
+  message: { ...typography.caption, textAlign: 'center' },
 });

@@ -11,6 +11,7 @@ import {
   ListItem,
   Screen,
   spacing,
+  typography,
   useThemeColors,
 } from '@/core/ui';
 
@@ -93,6 +94,6 @@ export default function TemplatesScreen() {
 const styles = StyleSheet.create({
   list: { padding: spacing.md, gap: spacing.md },
   header: { gap: spacing.sm },
-  hint: { fontSize: 13 },
+  hint: typography.caption,
   item: { gap: spacing.xs },
 });

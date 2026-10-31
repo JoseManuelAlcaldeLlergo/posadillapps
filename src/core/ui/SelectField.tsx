@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { spacing, useThemeColors } from './theme';
+import { radius, spacing, typography, useThemeColors } from './theme';
 
 export type SelectOption<T extends string> = { value: T; label: string };
 
@@ -53,7 +53,7 @@ export function SelectField<T extends string>({
       {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <View style={styles.backdrop}>
+        <View style={[styles.backdrop, { backgroundColor: colors.scrim }]}>
           <Pressable
             accessibilityLabel="Cerrar"
             style={StyleSheet.absoluteFill}
@@ -99,28 +99,26 @@ export function SelectField<T extends string>({
 
 const styles = StyleSheet.create({
   root: { gap: spacing.xs },
-  label: { fontSize: 14, fontWeight: '600' },
+  label: typography.captionStrong,
   field: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: radius.sm,
     paddingHorizontal: spacing.sm + 4,
     minHeight: 48,
   },
-  value: { flex: 1, fontSize: 16 },
-  arrow: { fontSize: 16 },
-  error: { fontSize: 13 },
+  value: { flex: 1, ...typography.body },
+  arrow: typography.body,
+  error: typography.caption,
   backdrop: {
     flex: 1,
     justifyContent: 'center',
     padding: spacing.lg,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
-  sheet: { borderRadius: 12, paddingVertical: spacing.sm, maxHeight: '80%' },
+  sheet: { borderRadius: radius.md, paddingVertical: spacing.sm, maxHeight: '80%' },
   sheetTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    ...typography.bodyStrong,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
@@ -131,6 +129,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
-  optionLabel: { flex: 1, fontSize: 16 },
-  optionSelected: { fontWeight: '600' },
+  optionLabel: { flex: 1, ...typography.body },
+  optionSelected: { fontWeight: typography.bodyStrong.fontWeight },
 });
