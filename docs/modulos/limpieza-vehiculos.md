@@ -53,11 +53,11 @@ Lista de vehículos que se limpian periódicamente, gestionada desde una pantall
 - Orientación: A4 apaisado.
 
 ## Criterios de aceptación
-- [ ] Dar de alta un vehículo de limpieza periódica eligiendo una matrícula del módulo de vehículos.
-- [ ] Dar de alta uno identificado por número de bastidor.
-- [ ] Generar un año y ver "Semanalmente {año}" en la fecha de revisión.
-- [ ] Generar el mismo año otra vez sin duplicados.
-- [ ] Registrar una limpieza puntual eligiendo un producto favorito existente.
-- [ ] Exportar un rango que abarque dos años y ver las filas periódicas de ambos años al principio.
-- [ ] Exportar a PDF con título y columna de firma vacía, e imprimirlo; exportar a Excel.
-- [ ] Los demás módulos siguen funcionando y exportando igual.
+- [x] Dar de alta un vehículo de limpieza periódica eligiendo una matrícula del módulo de vehículos.
+- [x] Dar de alta uno identificado por número de bastidor.
+- [x] Generar un año y ver "Semanalmente {año}" en la fecha de revisión.
+- [x] Generar el mismo año otra vez sin duplicados.
+- [x] Registrar una limpieza puntual eligiendo un producto favorito existente.
+- [x] Exportar un rango que abarque dos años y ver las filas periódicas de ambos años al principio.
+- [x] Exportar a PDF con título y columna de firma vacía, e imprimirlo; exportar a Excel.
+- [x] Los demás módulos siguen funcionando y exportando igual.
