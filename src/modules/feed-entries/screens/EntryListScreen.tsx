@@ -1,24 +1,30 @@
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { SectionList, StyleSheet, View } from 'react-native';
 
+import { groupByMonth } from '@/core/dates';
 import { db } from '@/core/db';
-import { formatDate, formatQuantity } from '@/core/export/format';
+import { formatQuantity } from '@/core/export/format';
 import {
-  Button,
-  CenteredMessage,
+  ActionChip,
   Chip,
-  ChipRow,
+  DateBadge,
   DateRangeField,
+  EmptyState,
+  Fab,
+  FAB_CLEARANCE,
+  FilterGroup,
   ListItem,
-  radius,
+  ListToolbar,
+  Notice,
   Screen,
+  SectionHeader,
   spacing,
-  typography,
   useThemeColors,
   type OptionalDateRange,
 } from '@/core/ui';
 
+import { feedEntriesModule } from '../module';
 import { listEntries, listEntrySupplierNames } from '../repository';
 import type { FeedEntry } from '../schema';
 
@@ -42,60 +48,39 @@ export default function EntryListScreen() {
     }, [range, supplierName, vehicleVisitId]),
   );
 
-  const activeFilters =
-    (range.from || range.to ? 1 : 0) + (supplierName ? 1 : 0) + (vehicleVisitId ? 1 : 0);
+  const activeFilters = (range.from || range.to ? 1 : 0) + (supplierName ? 1 : 0) + (vehicleVisitId ? 1 : 0);
+  const newEntry = () => router.push('/feed-entries/new');
 
   const header = (
     <View style={styles.header}>
-      <Button label="Nueva entrada" onPress={() => router.push('/feed-entries/new')} />
-      <View style={styles.actions}>
-        <View style={styles.action}>
-          <Button
-            label="Exportar"
-            variant="outlined"
-            onPress={() => router.push('/feed-entries/export')}
-          />
-        </View>
-        <View style={styles.action}>
-          <Button
-            label="Proveedores"
-            variant="outlined"
-            onPress={() => router.push('/feed-entries/suppliers')}
-          />
-        </View>
-      </View>
-      <ChipRow>
-        <Chip
-          label={activeFilters ? `Filtros (${activeFilters})` : 'Filtros'}
-          selected={showFilters}
-          onPress={() => setShowFilters(!showFilters)}
-        />
-        {activeFilters ? (
-          <Chip
-            label="Quitar filtros"
-            onPress={() => {
-              setRange({ from: null, to: null });
-              setSupplierName(null);
-              setVehicleVisitId(null);
-            }}
-          />
-        ) : null}
-      </ChipRow>
-      {vehicleVisitId ? (
-        <View style={[styles.visitFilter, { borderColor: colors.primary }]}>
-          <Text style={{ color: colors.text }}>Entradas de una visita de Entrada de vehículos.</Text>
-          <ChipRow>
-            <Chip label="Ver todas" onPress={() => setVehicleVisitId(null)} />
-          </ChipRow>
-        </View>
-      ) : null}
-      {showFilters ? (
-        <View style={[styles.filters, { borderColor: colors.outlineVariant }]}>
-          <DateRangeField value={range} onChange={setRange} optional />
-          {supplierNames.length > 0 ? (
-            <View style={styles.supplierFilter}>
-              <Text style={[styles.filterLabel, { color: colors.text }]}>Proveedor</Text>
-              <ChipRow>
+      <ListToolbar
+        actions={
+          <>
+            <ActionChip
+              label="Exportar"
+              icon="file-export-outline"
+              onPress={() => router.push('/feed-entries/export')}
+            />
+            <ActionChip
+              label="Proveedores"
+              icon="truck-outline"
+              onPress={() => router.push('/feed-entries/suppliers')}
+            />
+          </>
+        }
+        activeFilters={activeFilters}
+        filtersOpen={showFilters}
+        onToggleFilters={() => setShowFilters(!showFilters)}
+        onClearFilters={() => {
+          setRange({ from: null, to: null });
+          setSupplierName(null);
+          setVehicleVisitId(null);
+        }}
+        filters={
+          <>
+            <DateRangeField value={range} onChange={setRange} optional />
+            {supplierNames.length > 0 ? (
+              <FilterGroup label="Proveedor">
                 <Chip label="Todos" selected={!supplierName} onPress={() => setSupplierName(null)} />
                 {supplierNames.map((name) => (
                   <Chip
@@ -105,42 +90,60 @@ export default function EntryListScreen() {
                     onPress={() => setSupplierName(supplierName === name ? null : name)}
                   />
                 ))}
-              </ChipRow>
-            </View>
-          ) : null}
-        </View>
+              </FilterGroup>
+            ) : null}
+          </>
+        }
+      />
+      {vehicleVisitId ? (
+        <Notice
+          message="Entradas de una visita de Entrada de vehículos."
+          action={{ label: 'Ver todas', onPress: () => setVehicleVisitId(null) }}
+        />
       ) : null}
     </View>
   );
 
   return (
-    <Screen>
+    <Screen fab={<Fab label="Nueva entrada" onPress={newEntry} />}>
       <Stack.Screen options={{ title: 'Entradas de alimentos' }} />
-      <FlatList
-        data={entries}
+      <SectionList
+        sections={groupByMonth(entries, (entry) => entry.date)}
         keyExtractor={(entry) => String(entry.id)}
         contentContainerStyle={styles.list}
         ListHeaderComponent={header}
+        stickySectionHeadersEnabled={false}
+        renderSectionHeader={({ section }) => <SectionHeader title={section.title} />}
         renderItem={({ item }) => (
           <ListItem
-            title={`${formatDate(item.date)} · ${formatQuantity(item.quantity, item.unit)}`}
-            subtitle={[
-              `${item.supplierName} — ${item.feedName}`,
-              item.invoice ? `Factura/albarán: ${item.invoice}` : null,
-              item.truckPlate ? `Camión: ${item.truckPlate}` : null,
-            ]
-              .filter(Boolean)
-              .join('\n')}
-            onPress={() =>
-              router.push({ pathname: '/feed-entries/[id]', params: { id: String(item.id) } })
-            }
+            leading={<DateBadge date={item.date} />}
+            title={formatQuantity(item.quantity, item.unit)}
+            lines={[
+              item.feedName,
+              item.supplierName,
+              [
+                item.invoice ? `Factura/albarán ${item.invoice}` : null,
+                item.truckPlate ? `Camión ${item.truckPlate}` : null,
+              ]
+                .filter(Boolean)
+                .join(' · '),
+            ]}
+            onPress={() => router.push({ pathname: '/feed-entries/[id]', params: { id: String(item.id) } })}
           />
         )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListEmptyComponent={
-          <CenteredMessage
-            title={activeFilters ? 'No hay entradas con estos filtros' : 'Todavía no hay entradas'}
-            message={activeFilters ? undefined : 'Pulsa «Nueva entrada» para registrar la primera.'}
-          />
+          activeFilters ? (
+            <EmptyState icon="filter-off-outline" title="No hay entradas con estos filtros" />
+          ) : (
+            <EmptyState
+              icon={feedEntriesModule.icon}
+              tone={colors.category[feedEntriesModule.category]}
+              title="Todavía no hay entradas"
+              message="Registra aquí el pienso y el forraje que llegan a la explotación."
+              action={{ label: 'Nueva entrada', icon: 'plus', onPress: newEntry }}
+            />
+          )
         }
       />
     </Screen>
@@ -148,12 +151,7 @@ export default function EntryListScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: spacing.md, gap: spacing.sm },
-  header: { gap: spacing.sm, marginBottom: spacing.sm },
-  actions: { flexDirection: 'row', gap: spacing.sm },
-  action: { flex: 1 },
-  filters: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.md },
-  supplierFilter: { gap: spacing.xs },
-  filterLabel: typography.captionStrong,
-  visitFilter: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4, gap: spacing.sm },
+  list: { padding: spacing.md, paddingBottom: FAB_CLEARANCE },
+  header: { gap: spacing.sm },
+  separator: { height: spacing.sm },
 });

@@ -19,6 +19,8 @@ type Props = {
   /** Short tag next to the title, e.g. `Automática`. */
   badge?: string;
   badgeTone?: BadgeTone;
+  /** Small buttons under the lines, e.g. a `Repetir` chip. */
+  actions?: ReactNode;
   onPress?: () => void;
 };
 
@@ -35,6 +37,7 @@ export function ListItem({
   leading,
   badge,
   badgeTone = 'neutral',
+  actions,
   onPress,
 }: Props) {
   const colors = useThemeColors();
@@ -66,6 +69,7 @@ export function ListItem({
             {line}
           </Text>
         ))}
+        {actions ? <View style={styles.actions}>{actions}</View> : null}
       </View>
     </Pressable>
   );
@@ -81,6 +85,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   texts: { flex: 1, gap: spacing.xxs },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
   titleRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: spacing.sm },
   title: { ...typography.heading, flexShrink: 1 },
   badge: {

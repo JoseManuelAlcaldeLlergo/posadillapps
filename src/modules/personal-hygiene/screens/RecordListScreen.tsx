@@ -1,22 +1,26 @@
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { SectionList, StyleSheet, Text, View } from 'react-native';
+import { SectionList, StyleSheet, View } from 'react-native';
 
 import { db } from '@/core/db';
 import { getFarmCode } from '@/core/farm';
 import {
-  Button,
-  CenteredMessage,
+  ActionChip,
   Chip,
-  ChipRow,
+  EmptyState,
+  Fab,
+  FAB_CLEARANCE,
+  FilterGroup,
   ListItem,
-  radius,
+  ListToolbar,
+  Notice,
   Screen,
+  SectionHeader,
   spacing,
-  typography,
   useThemeColors,
 } from '@/core/ui';
 
+import { personalHygieneModule } from '../module';
 import { listRecordActions, listRecords, listRecordYears } from '../repository';
 import type { HygieneRecord } from '../schema';
 
@@ -57,62 +61,47 @@ export default function RecordListScreen() {
   );
 
   const activeFilters = (year ? 1 : 0) + (action ? 1 : 0);
+  const generateYear = () => router.push('/personal-hygiene/generate');
 
   const header = (
     <View style={styles.header}>
       {farmCode === null ? (
-        <View style={[styles.notice, { borderColor: colors.danger }]}>
-          <Text style={{ color: colors.text }}>
-            Falta el código de explotación. Configúralo antes de crear filas.
-          </Text>
-          <ChipRow>
-            <Chip label="Ir a Ajustes" onPress={() => router.push('/farm-settings')} />
-          </ChipRow>
-        </View>
-      ) : null}
-      <Button label="Generar año" onPress={() => router.push('/personal-hygiene/generate')} />
-      <View style={styles.actions}>
-        <View style={styles.action}>
-          <Button
-            label="Añadir fila"
-            variant="outlined"
-            onPress={() => router.push('/personal-hygiene/new')}
-          />
-        </View>
-        <View style={styles.action}>
-          <Button
-            label="Exportar"
-            variant="outlined"
-            onPress={() => router.push('/personal-hygiene/export')}
-          />
-        </View>
-      </View>
-      <Button
-        label="Plantillas de actuación"
-        variant="outlined"
-        onPress={() => router.push('/personal-hygiene/templates')}
-      />
-      <ChipRow>
-        <Chip
-          label={activeFilters ? `Filtros (${activeFilters})` : 'Filtros'}
-          selected={showFilters}
-          onPress={() => setShowFilters(!showFilters)}
+        <Notice
+          tone="danger"
+          message="Falta el código de explotación. Configúralo antes de crear filas."
+          action={{ label: 'Ir a Ajustes', onPress: () => router.push('/farm-settings') }}
         />
-        {activeFilters ? (
-          <Chip
-            label="Quitar filtros"
-            onPress={() => {
-              setYear(null);
-              setAction(null);
-            }}
-          />
-        ) : null}
-      </ChipRow>
-      {showFilters ? (
-        <View style={[styles.filters, { borderColor: colors.outlineVariant }]}>
-          <View style={styles.filter}>
-            <Text style={[styles.filterLabel, { color: colors.text }]}>Año</Text>
-            <ChipRow>
+      ) : null}
+      <ListToolbar
+        actions={
+          <>
+            <ActionChip
+              label="Añadir fila"
+              icon="plus"
+              onPress={() => router.push('/personal-hygiene/new')}
+            />
+            <ActionChip
+              label="Exportar"
+              icon="file-export-outline"
+              onPress={() => router.push('/personal-hygiene/export')}
+            />
+            <ActionChip
+              label="Plantillas de actuación"
+              icon="file-document-multiple-outline"
+              onPress={() => router.push('/personal-hygiene/templates')}
+            />
+          </>
+        }
+        activeFilters={activeFilters}
+        filtersOpen={showFilters}
+        onToggleFilters={() => setShowFilters(!showFilters)}
+        onClearFilters={() => {
+          setYear(null);
+          setAction(null);
+        }}
+        filters={
+          <>
+            <FilterGroup label="Año">
               <Chip label="Todos" selected={!year} onPress={() => setYear(null)} />
               {years.map((y) => (
                 <Chip
@@ -122,12 +111,9 @@ export default function RecordListScreen() {
                   onPress={() => setYear(year === y ? null : y)}
                 />
               ))}
-            </ChipRow>
-          </View>
-          {actions.length > 0 ? (
-            <View style={styles.filter}>
-              <Text style={[styles.filterLabel, { color: colors.text }]}>Actuación</Text>
-              <ChipRow>
+            </FilterGroup>
+            {actions.length > 0 ? (
+              <FilterGroup label="Actuación">
                 <Chip label="Todas" selected={!action} onPress={() => setAction(null)} />
                 {actions.map((name) => (
                   <Chip
@@ -137,16 +123,16 @@ export default function RecordListScreen() {
                     onPress={() => setAction(action === name ? null : name)}
                   />
                 ))}
-              </ChipRow>
-            </View>
-          ) : null}
-        </View>
-      ) : null}
+              </FilterGroup>
+            ) : null}
+          </>
+        }
+      />
     </View>
   );
 
   return (
-    <Screen>
+    <Screen fab={<Fab label="Generar año" icon="calendar-sync" onPress={generateYear} />}>
       <Stack.Screen options={{ title: 'Higiene personal' }} />
       <SectionList
         sections={byYear(records)}
@@ -155,36 +141,34 @@ export default function RecordListScreen() {
         ListHeaderComponent={header}
         stickySectionHeadersEnabled={false}
         renderSectionHeader={({ section }) => (
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            {section.year} · {rowCount(section.data.length)}
-          </Text>
+          <SectionHeader title={`${section.year} · ${rowCount(section.data.length)}`} />
         )}
         renderItem={({ item }) => (
-          <View style={styles.item}>
-            <ListItem
-              title={item.action}
-              subtitle={[
-                `${item.productiveUnit} · ${item.place}`,
-                `${item.result} · ${item.dateText}`,
-                item.correctiveMeasures ? `Medidas correctoras: ${item.correctiveMeasures}` : null,
-              ]
-                .filter(Boolean)
-                .join('\n')}
-              onPress={() =>
-                router.push({ pathname: '/personal-hygiene/[id]', params: { id: String(item.id) } })
-              }
-            />
-          </View>
-        )}
-        ListEmptyComponent={
-          <CenteredMessage
-            title={activeFilters ? 'No hay filas con estos filtros' : 'Todavía no hay filas'}
-            message={
-              activeFilters
-                ? undefined
-                : 'Crea las plantillas de actuación y pulsa «Generar año» para crear las filas del año.'
+          <ListItem
+            title={item.action}
+            lines={[
+              `${item.productiveUnit} · ${item.place}`,
+              `${item.result} · ${item.dateText}`,
+              item.correctiveMeasures ? `Medidas correctoras: ${item.correctiveMeasures}` : null,
+            ]}
+            onPress={() =>
+              router.push({ pathname: '/personal-hygiene/[id]', params: { id: String(item.id) } })
             }
           />
+        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ListEmptyComponent={
+          activeFilters ? (
+            <EmptyState icon="filter-off-outline" title="No hay filas con estos filtros" />
+          ) : (
+            <EmptyState
+              icon={personalHygieneModule.icon}
+              tone={colors.category[personalHygieneModule.category]}
+              title="Todavía no hay filas"
+              message="Crea las plantillas de actuación y pulsa «Generar año» para crear las filas del año."
+              action={{ label: 'Generar año', icon: 'calendar-sync', onPress: generateYear }}
+            />
+          )
         }
       />
     </Screen>
@@ -192,14 +176,7 @@ export default function RecordListScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: spacing.md },
-  header: { gap: spacing.sm, marginBottom: spacing.sm },
-  actions: { flexDirection: 'row', gap: spacing.sm },
-  action: { flex: 1 },
-  notice: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4, gap: spacing.sm },
-  filters: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.md },
-  filter: { gap: spacing.xs },
-  filterLabel: typography.captionStrong,
-  sectionTitle: { ...typography.bodyStrong, marginTop: spacing.md, marginBottom: spacing.sm },
-  item: { marginBottom: spacing.sm },
+  list: { padding: spacing.md, paddingBottom: FAB_CLEARANCE },
+  header: { gap: spacing.sm },
+  separator: { height: spacing.sm },
 });

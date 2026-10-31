@@ -20,6 +20,7 @@ export { EmptyState } from './EmptyState';
 export { Fab, FAB_CLEARANCE } from './Fab';
 export { FrequencyField } from './FrequencyField';
 export { ListItem } from './ListItem';
+export { FilterGroup, ListToolbar } from './ListToolbar';
 export { ModuleCard } from './ModuleCard';
 export { Notice } from './Notice';
 export { Screen } from './Screen';

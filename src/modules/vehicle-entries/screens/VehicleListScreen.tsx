@@ -2,16 +2,21 @@ import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { SectionList, StyleSheet, Text, View } from 'react-native';
 
+import { groupByMonth } from '@/core/dates';
 import { db } from '@/core/db';
-import { formatDate } from '@/core/export/format';
 import {
-  Button,
+  ActionChip,
   Chip,
-  ChipRow,
+  DateBadge,
   DateRangeField,
+  EmptyState,
+  Fab,
+  FAB_CLEARANCE,
+  FilterGroup,
   ListItem,
-  radius,
+  ListToolbar,
   Screen,
+  SectionHeader,
   spacing,
   TextField,
   typography,
@@ -19,12 +24,39 @@ import {
   type OptionalDateRange,
 } from '@/core/ui';
 
+import { vehicleEntriesModule } from '../module';
 import { isAutomatic, listRegulars, listVisits } from '../repository';
 import type { VehicleRegular, VehicleVisit } from '../schema';
 import { VEHICLE_TYPE_LABELS, VEHICLE_TYPE_OPTIONS, type VehicleType } from '../vehicleTypes';
 
 type Item = { kind: 'regular'; regular: VehicleRegular } | { kind: 'visit'; visit: VehicleVisit };
-type Section = { title: string; empty: string; data: Item[] };
+type Section = { key: string; title: string; empty?: string; data: Item[] };
+
+/** Regular vehicles first, then the visits month by month. */
+function buildSections(regulars: VehicleRegular[], visits: VehicleVisit[], filtered: boolean): Section[] {
+  return [
+    {
+      key: 'regulars',
+      title: 'Vehículos habituales',
+      empty: filtered ? 'Ninguno con estos filtros.' : 'Ninguno todavía.',
+      data: regulars.map((regular) => ({ kind: 'regular' as const, regular })),
+    },
+    ...(visits.length > 0
+      ? groupByMonth(visits, (visit) => visit.date).map((month) => ({
+          key: month.key,
+          title: month.title,
+          data: month.data.map((visit) => ({ kind: 'visit' as const, visit })),
+        }))
+      : [
+          {
+            key: 'visits',
+            title: 'Visitas',
+            empty: filtered ? 'Ninguna con estos filtros.' : 'Ninguna todavía.',
+            data: [],
+          },
+        ]),
+  ];
+}
 
 export default function VehicleListScreen() {
   const colors = useThemeColors();
@@ -43,61 +75,37 @@ export default function VehicleListScreen() {
     }, [range, plate, vehicleType]),
   );
 
-  const activeFilters =
-    (range.from || range.to ? 1 : 0) + (plate.trim() ? 1 : 0) + (vehicleType ? 1 : 0);
-  const filtered = activeFilters > 0;
-
-  const sections: Section[] = [
-    {
-      title: 'Vehículos habituales',
-      empty: filtered ? 'Ninguno con estos filtros.' : 'Ninguno todavía.',
-      data: regulars.map((regular) => ({ kind: 'regular', regular })),
-    },
-    {
-      title: 'Visitas',
-      empty: filtered ? 'Ninguna con estos filtros.' : 'Ninguna todavía.',
-      data: visits.map((visit) => ({ kind: 'visit', visit })),
-    },
-  ];
+  const activeFilters = (range.from || range.to ? 1 : 0) + (plate.trim() ? 1 : 0) + (vehicleType ? 1 : 0);
+  const nothing = regulars.length === 0 && visits.length === 0;
+  const sections = nothing ? [] : buildSections(regulars, visits, activeFilters > 0);
+  const newVisit = () => router.push('/vehicle-entries/visits/new');
 
   const header = (
-    <View style={styles.header}>
-      <Button label="Nueva visita" onPress={() => router.push('/vehicle-entries/visits/new')} />
-      <View style={styles.actions}>
-        <View style={styles.action}>
-          <Button
+    <ListToolbar
+      actions={
+        <>
+          <ActionChip
             label="Nuevo habitual"
-            variant="outlined"
+            icon="truck-plus-outline"
             onPress={() => router.push('/vehicle-entries/regulars/new')}
           />
-        </View>
-        <View style={styles.action}>
-          <Button
+          <ActionChip
             label="Exportar"
-            variant="outlined"
+            icon="file-export-outline"
             onPress={() => router.push('/vehicle-entries/export')}
           />
-        </View>
-      </View>
-      <ChipRow>
-        <Chip
-          label={activeFilters ? `Filtros (${activeFilters})` : 'Filtros'}
-          selected={showFilters}
-          onPress={() => setShowFilters(!showFilters)}
-        />
-        {activeFilters ? (
-          <Chip
-            label="Quitar filtros"
-            onPress={() => {
-              setRange({ from: null, to: null });
-              setPlate('');
-              setVehicleType(null);
-            }}
-          />
-        ) : null}
-      </ChipRow>
-      {showFilters ? (
-        <View style={[styles.filters, { borderColor: colors.outlineVariant }]}>
+        </>
+      }
+      activeFilters={activeFilters}
+      filtersOpen={showFilters}
+      onToggleFilters={() => setShowFilters(!showFilters)}
+      onClearFilters={() => {
+        setRange({ from: null, to: null });
+        setPlate('');
+        setVehicleType(null);
+      }}
+      filters={
+        <>
           <DateRangeField value={range} onChange={setRange} optional />
           <TextField
             label="Matrícula"
@@ -107,51 +115,45 @@ export default function VehicleListScreen() {
             autoCapitalize="characters"
             autoCorrect={false}
           />
-          <View style={styles.typeFilter}>
-            <Text style={[styles.filterLabel, { color: colors.text }]}>Tipo de vehículo</Text>
-            <ChipRow>
-              <Chip label="Todos" selected={!vehicleType} onPress={() => setVehicleType(null)} />
-              {VEHICLE_TYPE_OPTIONS.map((option) => (
-                <Chip
-                  key={option.value}
-                  label={option.label}
-                  selected={vehicleType === option.value}
-                  onPress={() =>
-                    setVehicleType(vehicleType === option.value ? null : option.value)
-                  }
-                />
-              ))}
-            </ChipRow>
-          </View>
-        </View>
-      ) : null}
-    </View>
+          <FilterGroup label="Tipo de vehículo">
+            <Chip label="Todos" selected={!vehicleType} onPress={() => setVehicleType(null)} />
+            {VEHICLE_TYPE_OPTIONS.map((option) => (
+              <Chip
+                key={option.value}
+                label={option.label}
+                selected={vehicleType === option.value}
+                onPress={() => setVehicleType(vehicleType === option.value ? null : option.value)}
+              />
+            ))}
+          </FilterGroup>
+        </>
+      }
+    />
   );
 
   return (
-    <Screen>
+    <Screen fab={<Fab label="Nueva visita" onPress={newVisit} />}>
       <Stack.Screen options={{ title: 'Entrada de vehículos' }} />
       <SectionList
         sections={sections}
-        keyExtractor={(item) =>
-          item.kind === 'regular' ? `r${item.regular.id}` : `v${item.visit.id}`
-        }
+        keyExtractor={(item) => (item.kind === 'regular' ? `r${item.regular.id}` : `v${item.visit.id}`)}
         contentContainerStyle={styles.list}
         ListHeaderComponent={header}
         stickySectionHeadersEnabled={false}
-        renderSectionHeader={({ section }) => (
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
-        )}
+        renderSectionHeader={({ section }) => <SectionHeader title={section.title} />}
         renderSectionFooter={({ section }) =>
-          section.data.length === 0 ? (
+          section.data.length === 0 && section.empty ? (
             <Text style={[styles.sectionEmpty, { color: colors.textMuted }]}>{section.empty}</Text>
           ) : null
         }
         renderItem={({ item }) =>
           item.kind === 'regular' ? (
             <ListItem
-              title={`${item.regular.plate} · ${item.regular.frequency}`}
-              subtitle={`${VEHICLE_TYPE_LABELS[item.regular.vehicleType]} — ${item.regular.reason}`}
+              title={item.regular.plate}
+              lines={[
+                item.regular.reason,
+                `${VEHICLE_TYPE_LABELS[item.regular.vehicleType]} · ${item.regular.frequency}`,
+              ]}
               badge={item.regular.active ? undefined : 'Inactivo'}
               onPress={() =>
                 router.push({
@@ -162,8 +164,9 @@ export default function VehicleListScreen() {
             />
           ) : (
             <ListItem
-              title={`${formatDate(item.visit.date)} · ${item.visit.plate}`}
-              subtitle={`${VEHICLE_TYPE_LABELS[item.visit.vehicleType]} — ${item.visit.reason}`}
+              leading={<DateBadge date={item.visit.date} />}
+              title={item.visit.plate}
+              lines={[item.visit.reason, VEHICLE_TYPE_LABELS[item.visit.vehicleType]]}
               badge={isAutomatic(item.visit) ? 'Automática' : undefined}
               badgeTone="primary"
               onPress={() =>
@@ -175,19 +178,27 @@ export default function VehicleListScreen() {
             />
           )
         }
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ListEmptyComponent={
+          activeFilters ? (
+            <EmptyState icon="filter-off-outline" title="No hay vehículos ni visitas con estos filtros" />
+          ) : (
+            <EmptyState
+              icon={vehicleEntriesModule.icon}
+              tone={colors.category[vehicleEntriesModule.category]}
+              title="Todavía no hay visitas"
+              message="Apunta cada vehículo que entra en la explotación, o da de alta los habituales."
+              action={{ label: 'Nueva visita', icon: 'plus', onPress: newVisit }}
+            />
+          )
+        }
       />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { padding: spacing.md, gap: spacing.sm },
-  header: { gap: spacing.sm, marginBottom: spacing.sm },
-  actions: { flexDirection: 'row', gap: spacing.sm },
-  action: { flex: 1 },
-  filters: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, gap: spacing.md },
-  typeFilter: { gap: spacing.xs },
-  filterLabel: typography.captionStrong,
-  sectionTitle: { ...typography.bodyStrong, marginTop: spacing.md },
+  list: { padding: spacing.md, paddingBottom: FAB_CLEARANCE },
+  separator: { height: spacing.sm },
   sectionEmpty: typography.caption,
 });
