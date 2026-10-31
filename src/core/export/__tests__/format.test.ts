@@ -5,6 +5,7 @@ import {
   formatNumber,
   formatQuantity,
   parseIsoDate,
+  periodFileSuffix,
 } from '../format';
 
 describe('parseIsoDate', () => {
@@ -84,5 +85,16 @@ describe('exportFileName', () => {
     );
     expect(exportFileName('Denominación', 'pdf')).toBe('Denominacion.pdf');
     expect(exportFileName('///', 'pdf')).toBe('export.pdf');
+  });
+});
+
+describe('periodFileSuffix', () => {
+  it('uses both dates of a date range', () => {
+    expect(periodFileSuffix({ from: '2025-01-01', to: '2025-03-31' })).toBe('01-01-2025_a_31-03-2025');
+  });
+
+  it('uses the years of a year range, once if they are equal', () => {
+    expect(periodFileSuffix({ fromYear: 2013, toYear: 2014 })).toBe('2013_a_2014');
+    expect(periodFileSuffix({ fromYear: 2013, toYear: 2013 })).toBe('2013');
   });
 });

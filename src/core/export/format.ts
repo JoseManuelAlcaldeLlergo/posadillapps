@@ -1,4 +1,5 @@
-import type { CellValue, DateSeparator } from './types';
+import type { DateRange } from '../dates';
+import type { CellValue, DateSeparator, YearRange } from './types';
 
 export type DateParts = { year: number; month: number; day: number };
 
@@ -78,6 +79,16 @@ export function exportFileName(baseName: string, extension: string, suffix?: str
     .replace(/[^A-Za-z0-9_-]+/g, '-')
     .replace(/^-+|-+$/g, '');
   return `${safe || 'export'}.${extension}`;
+}
+
+/** File name suffix for an export period: `01-01-2025_a_31-03-2025`, `2013_a_2014` or `2013`. */
+export function periodFileSuffix(period: DateRange | YearRange): string {
+  if ('fromYear' in period) {
+    return period.fromYear === period.toYear
+      ? String(period.fromYear)
+      : `${period.fromYear}_a_${period.toYear}`;
+  }
+  return `${formatDate(period.from)}_a_${formatDate(period.to)}`;
 }
 
 function pad2(value: number): string {

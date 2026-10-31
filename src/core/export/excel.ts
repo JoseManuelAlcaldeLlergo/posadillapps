@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx';
 
 import { parseIsoDate, significantDecimals } from './format';
 import { sortRows } from './rows';
-import type { CellValue, DateSeparator, TableDefinition } from './types';
+import type { CellValue, DateSeparator, PeriodType, TableDefinition } from './types';
 
 const DEFAULT_WIDTH = 15;
 const MS_PER_DAY = 86_400_000;
@@ -32,9 +32,13 @@ export function quantityNumberFormat(value: number, unit: string): string {
 
 /**
  * Workbook with one sheet: optional heading lines (merged across columns),
- * header row and one row per record, with real dates and numbers.
+ * header row and one row per record, with real dates and numbers. Data rows
+ * get `bodyRowHeight` when set.
  */
-export function buildWorkbook<Row>(definition: TableDefinition<Row>, rows: readonly Row[]): XLSX.WorkBook {
+export function buildWorkbook<Row>(
+  definition: TableDefinition<Row, PeriodType>,
+  rows: readonly Row[],
+): XLSX.WorkBook {
   const { columns } = definition;
   const sheet: XLSX.WorkSheet = {};
   const lastColumn = Math.max(columns.length - 1, 0);
@@ -69,6 +73,13 @@ export function buildWorkbook<Row>(definition: TableDefinition<Row>, rows: reado
     ref: XLSX.utils.encode_range({ s: { r: headerRow, c: 0 }, e: { r: lastRow, c: lastColumn } }),
   };
   sheet['!cols'] = columns.map((column) => ({ wch: column.width ?? DEFAULT_WIDTH }));
+  if (definition.bodyRowHeight) {
+    const rowsInfo: XLSX.RowInfo[] = [];
+    sorted.forEach((_, index) => {
+      rowsInfo[headerRow + index + 1] = { hpt: definition.bodyRowHeight };
+    });
+    sheet['!rows'] = rowsInfo;
+  }
 
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, sheet, sheetName(definition.title));
@@ -76,7 +87,10 @@ export function buildWorkbook<Row>(definition: TableDefinition<Row>, rows: reado
 }
 
 /** `.xlsx` file contents encoded in base64. */
-export function buildXlsxBase64<Row>(definition: TableDefinition<Row>, rows: readonly Row[]): string {
+export function buildXlsxBase64<Row>(
+  definition: TableDefinition<Row, PeriodType>,
+  rows: readonly Row[],
+): string {
   return XLSX.write(buildWorkbook(definition, rows), { type: 'base64', bookType: 'xlsx' });
 }
 

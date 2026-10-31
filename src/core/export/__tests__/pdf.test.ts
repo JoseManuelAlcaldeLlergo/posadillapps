@@ -76,6 +76,16 @@ describe('buildPdfHtml', () => {
     expect(rows[0]).toContain('<td class="center">31/01/2025</td>');
   });
 
+  it('leaves the row height to the content by default', () => {
+    expect(html).not.toContain('tbody td {');
+  });
+
+  it('sets a minimum height for data rows only', () => {
+    const tall = buildPdfHtml({ ...sampleTable, bodyRowHeight: 40 }, sampleRows);
+    expect(tall).toContain('tbody td { height: 40pt; }');
+    expect(tall.replace('\ntbody td { height: 40pt; }', '')).toBe(html);
+  });
+
   it('renders only the header when there are no rows', () => {
     const empty = buildPdfHtml(sampleTable, []);
     expect(empty).toContain('<th>FECHA</th>');

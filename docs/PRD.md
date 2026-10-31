@@ -2,7 +2,7 @@
 
 ## Visión
 
-App Android para gestionar los registros de una explotación ganadera desde el móvil. Se construye por módulos: cada módulo es un tipo de registro (una tabla) con su formulario, su listado y su exportación. La v1 incluye dos módulos: **Entradas de alimentos** y **Entrada de vehículos**. Los módulos con especificación propia se detallan en `docs/modulos/`.
+App Android para gestionar los registros de una explotación ganadera desde el móvil. Se construye por módulos: cada módulo es un tipo de registro (una tabla) con su formulario, su listado y su exportación. La v1 incluye tres módulos: **Entradas de alimentos**, **Entrada de vehículos** e **Higiene personal**. Los módulos con especificación propia se detallan en `docs/modulos/`.
 
 ## Alcance de la v1
 
@@ -20,6 +20,7 @@ Fuera de alcance en v1: iOS, varias explotaciones, usuarios y permisos, sincroni
 | --- | --- | --- |
 | 1 | Entradas de alimentos | En este documento. |
 | 2 | Entrada de vehículos | [modulos/entrada-vehiculos.md](modulos/entrada-vehiculos.md). Registro de bioseguridad; las entradas de alimentos con matrícula generan visitas automáticamente. |
+| 3 | Higiene personal | [modulos/higiene-personal.md](modulos/higiene-personal.md). Plan anual de buenas prácticas de higiene personal, generado cada año desde plantillas de actuación. Usa los Ajustes de la explotación (código de explotación y unidades productivas). |
 
 ## Módulo 1: Entradas de alimentos
 
@@ -94,3 +95,4 @@ Ejemplos reales: proveedor "Mezclas del Valle" con piensos "Cerdos crecimiento",
 - [ ] Hacer copia de seguridad, borrar la app, reinstalar y restaurar sin pérdida de datos.
 - [ ] La app funciona sin conexión.
 - [ ] Se cumplen los criterios de aceptación de [Entrada de vehículos](modulos/entrada-vehiculos.md#criterios-de-aceptación).
+- [ ] Se cumplen los criterios de aceptación de [Higiene personal](modulos/higiene-personal.md#criterios-de-aceptación).
