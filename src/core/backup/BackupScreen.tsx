@@ -176,7 +176,7 @@ export default function BackupScreen({ modules }: Props) {
         ) : null}
       </View>
 
-      <View style={[styles.note, { borderColor: colors.border }]}>
+      <View style={[styles.note, { borderColor: colors.outlineVariant }]}>
         <Text style={muted}>
           Android también guarda una copia automática en tu cuenta de Google si está activada en
           Ajustes → Google → Copia de seguridad. Se recupera sola al reinstalar la app.

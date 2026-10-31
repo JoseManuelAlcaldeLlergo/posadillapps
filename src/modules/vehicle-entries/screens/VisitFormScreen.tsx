@@ -142,7 +142,7 @@ export default function VisitFormScreen({ visitId, sourceLink }: Props) {
       ) : null}
 
       {automatic ? (
-        <View style={[styles.notice, { borderColor: colors.border }]}>
+        <View style={[styles.notice, { borderColor: colors.outlineVariant }]}>
           <Text style={[styles.readOnly, { color: colors.text }]}>
             {values.plate} · {formatDate(values.date)}
           </Text>

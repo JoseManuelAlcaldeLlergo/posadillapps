@@ -125,7 +125,7 @@ export default function CleaningListScreen() {
         ) : null}
       </ChipRow>
       {showFilters ? (
-        <View style={[styles.filters, { borderColor: colors.border }]}>
+        <View style={[styles.filters, { borderColor: colors.outlineVariant }]}>
           <DateRangeField value={range} onChange={setRange} optional />
           <View style={styles.productFilter}>
             <Text style={[styles.filterLabel, { color: colors.text }]}>Producto</Text>

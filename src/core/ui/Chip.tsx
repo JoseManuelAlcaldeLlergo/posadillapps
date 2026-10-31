@@ -20,12 +20,12 @@ export function Chip({ label, selected, onPress }: Props) {
         styles.chip,
         {
           backgroundColor: selected ? colors.primary : colors.surface,
-          borderColor: selected ? colors.primary : colors.border,
+          borderColor: selected ? colors.primary : colors.outlineVariant,
           opacity: pressed ? 0.7 : 1,
         },
       ]}
     >
-      <Text style={[styles.label, { color: selected ? colors.surface : colors.text }]}>{label}</Text>
+      <Text style={[styles.label, { color: selected ? colors.onPrimary : colors.text }]}>{label}</Text>
     </Pressable>
   );
 }

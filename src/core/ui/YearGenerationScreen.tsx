@@ -170,7 +170,7 @@ export function YearGenerationScreen<Source, Row, Values>({
         {drafts.map((draft, index) => (
           <View
             key={rowKey(draft.row)}
-            style={[styles.card, { borderColor: colors.border, backgroundColor: colors.surface }]}
+            style={[styles.card, { borderColor: colors.outlineVariant, backgroundColor: colors.surface }]}
           >
             <Checkbox
               label={rowTitle(draft.values)}

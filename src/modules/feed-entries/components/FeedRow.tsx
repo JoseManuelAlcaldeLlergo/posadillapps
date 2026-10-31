@@ -24,7 +24,7 @@ export function FeedRow({ name, onRename, onDelete }: Props) {
       else setEditing(false);
     };
     return (
-      <View style={[styles.card, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+      <View style={[styles.card, { borderColor: colors.outlineVariant, backgroundColor: colors.surface }]}>
         <TextField
           label="Nombre del pienso"
           value={draft}
@@ -57,7 +57,7 @@ export function FeedRow({ name, onRename, onDelete }: Props) {
   }
 
   return (
-    <View style={[styles.card, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+    <View style={[styles.card, { borderColor: colors.outlineVariant, backgroundColor: colors.surface }]}>
       <Text style={[styles.name, { color: colors.text }]}>{name}</Text>
       <View style={styles.buttons}>
         <View style={styles.button}>

@@ -26,7 +26,7 @@ export function TextField({ label, error, optional, style, ref, ...inputProps }:
           {
             color: colors.text,
             backgroundColor: colors.surface,
-            borderColor: error ? colors.danger : colors.border,
+            borderColor: error ? colors.danger : colors.outlineVariant,
           },
           style,
         ]}

@@ -42,7 +42,7 @@ export function DateField({ label, value, onChange, error, placeholder, clearabl
             styles.field,
             {
               backgroundColor: colors.surface,
-              borderColor: error ? colors.danger : colors.border,
+              borderColor: error ? colors.danger : colors.outlineVariant,
             },
           ]}
         >
