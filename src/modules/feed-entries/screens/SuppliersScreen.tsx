@@ -58,7 +58,7 @@ export default function SuppliersScreen() {
                 setName(text);
                 setError(undefined);
               }}
-              placeholder="Mezclas del Valle"
+              example="Mezclas del Valle"
               autoCapitalize="words"
               returnKeyType="done"
               onSubmitEditing={onAdd}

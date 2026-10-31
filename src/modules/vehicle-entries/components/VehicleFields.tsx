@@ -60,7 +60,7 @@ export function VehicleFields({
             label="Matrícula"
             value={values.plate}
             onChangeText={changePlate}
-            placeholder="6105 HHR"
+            example="6105 HHR"
             autoCapitalize="characters"
             autoCorrect={false}
             error={errors.plate}
@@ -80,7 +80,7 @@ export function VehicleFields({
           label="Motivo de visita"
           value={values.reason}
           onChangeText={(reason) => onChange({ reason })}
-          placeholder="Control y cuidado de animales"
+          example="Control y cuidado de animales"
           autoCapitalize="sentences"
           error={errors.reason}
         />

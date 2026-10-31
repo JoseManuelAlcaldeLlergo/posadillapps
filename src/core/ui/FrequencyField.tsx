@@ -21,7 +21,7 @@ export function FrequencyField({ value, onChange, suggestions, error, label = 'F
         label={label}
         value={value}
         onChangeText={onChange}
-        placeholder="A diario"
+        example="A diario"
         autoCapitalize="sentences"
         error={error}
       />

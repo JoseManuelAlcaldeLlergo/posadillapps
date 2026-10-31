@@ -115,7 +115,7 @@ export default function PeriodicFormScreen({ periodicId }: Props) {
         optional
         value={values.reviewText}
         onChangeText={(reviewText) => change({ reviewText })}
-        placeholder="Semanalmente 2023"
+        example="Semanalmente 2023"
         autoCapitalize="sentences"
         error={errors.reviewText}
       />

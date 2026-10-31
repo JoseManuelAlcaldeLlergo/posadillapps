@@ -27,7 +27,7 @@ export function HygieneFields({ values, onChange, errors, suggestions, yearExamp
           label="Unidad productiva"
           value={values.productiveUnit}
           onChangeText={(productiveUnit) => onChange({ productiveUnit })}
-          placeholder="Ovino y porcino"
+          example="Ovino y porcino"
           autoCapitalize="sentences"
           error={errors.productiveUnit}
         />
@@ -44,7 +44,7 @@ export function HygieneFields({ values, onChange, errors, suggestions, yearExamp
           label="Actuación"
           value={values.action}
           onChangeText={(action) => onChange({ action })}
-          placeholder="Limpieza de manos, botas"
+          example="Limpieza de manos, botas"
           autoCapitalize="sentences"
           error={errors.action}
         />
@@ -61,7 +61,7 @@ export function HygieneFields({ values, onChange, errors, suggestions, yearExamp
           label="Lugar"
           value={values.place}
           onChangeText={(place) => onChange({ place })}
-          placeholder="Nave"
+          example="Nave"
           autoCapitalize="sentences"
           error={errors.place}
         />
@@ -77,7 +77,7 @@ export function HygieneFields({ values, onChange, errors, suggestions, yearExamp
         label="Resultado"
         value={values.result}
         onChangeText={(result) => onChange({ result })}
-        placeholder={`Mensualmente año ${yearExample}`}
+        example={`Mensualmente año ${yearExample}`}
         autoCapitalize="sentences"
         error={errors.result}
       />
@@ -94,7 +94,7 @@ export function HygieneFields({ values, onChange, errors, suggestions, yearExamp
         label="Fecha"
         value={values.dateText}
         onChangeText={(dateText) => onChange({ dateText })}
-        placeholder={`1 de cada mes ${yearExample}`}
+        example={`1 de cada mes ${yearExample}`}
         autoCapitalize="sentences"
         error={errors.dateText}
       />

@@ -24,6 +24,7 @@ export { ModuleCard } from './ModuleCard';
 export { Notice } from './Notice';
 export { Screen } from './Screen';
 export { SectionHeader } from './SectionHeader';
+export { SegmentedControl } from './SegmentedControl';
 export { SelectField, type SelectOption } from './SelectField';
 export { SuggestionChips } from './SuggestionChips';
 export { TableExportScreen } from './TableExportScreen';

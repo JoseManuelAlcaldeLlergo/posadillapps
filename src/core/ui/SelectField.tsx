@@ -1,5 +1,7 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { radius, spacing, typography, useThemeColors } from './theme';
 
@@ -15,7 +17,7 @@ type Props<T extends string> = {
   placeholder?: string;
 };
 
-/** Dropdown with a fixed list of options; opens them in a modal sheet. */
+/** Dropdown with a fixed list of options; opens them in a bottom sheet. */
 export function SelectField<T extends string>({
   label,
   options,
@@ -25,6 +27,7 @@ export function SelectField<T extends string>({
   placeholder,
 }: Props<T>) {
   const colors = useThemeColors();
+  const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
   const selected = options.find((option) => option.value === value);
 
@@ -40,26 +43,44 @@ export function SelectField<T extends string>({
         accessibilityRole="button"
         accessibilityLabel={`${label}: ${selected?.label ?? 'sin elegir'}`}
         onPress={() => setOpen(true)}
+        android_ripple={{ color: colors.ripple }}
         style={[
           styles.field,
-          { backgroundColor: colors.surface, borderColor: error ? colors.danger : colors.outlineVariant },
+          {
+            backgroundColor: colors.surface,
+            borderColor: error ? colors.danger : colors.outline,
+            borderWidth: error ? 2 : 1,
+          },
         ]}
       >
         <Text style={[styles.value, { color: selected ? colors.text : colors.textMuted }]}>
           {selected?.label ?? placeholder ?? 'Elige una opción'}
         </Text>
-        <Text style={[styles.arrow, { color: colors.textMuted }]}>▾</Text>
+        <MaterialCommunityIcons name="chevron-down" size={24} color={colors.textMuted} />
       </Pressable>
       {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
 
-      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+      <Modal
+        visible={open}
+        transparent
+        animationType="slide"
+        statusBarTranslucent
+        navigationBarTranslucent
+        onRequestClose={() => setOpen(false)}
+      >
         <View style={[styles.backdrop, { backgroundColor: colors.scrim }]}>
           <Pressable
             accessibilityLabel="Cerrar"
             style={StyleSheet.absoluteFill}
             onPress={() => setOpen(false)}
           />
-          <View style={[styles.sheet, { backgroundColor: colors.surface }]}>
+          <View
+            style={[
+              styles.sheet,
+              { backgroundColor: colors.surface, paddingBottom: insets.bottom + spacing.sm },
+            ]}
+          >
+            <View style={[styles.handle, { backgroundColor: colors.outlineVariant }]} />
             <Text style={[styles.sheetTitle, { color: colors.text }]}>{label}</Text>
             <FlatList
               data={options}
@@ -71,21 +92,21 @@ export function SelectField<T extends string>({
                     accessibilityRole="button"
                     accessibilityState={{ selected: isSelected }}
                     onPress={() => choose(item)}
-                    style={({ pressed }) => [
-                      styles.option,
-                      { borderColor: colors.outlineVariant, opacity: pressed ? 0.7 : 1 },
-                    ]}
+                    android_ripple={{ color: colors.ripple }}
+                    style={[styles.option, isSelected && { backgroundColor: colors.primaryContainer }]}
                   >
                     <Text
                       style={[
                         styles.optionLabel,
-                        { color: isSelected ? colors.primary : colors.text },
+                        { color: isSelected ? colors.onPrimaryContainer : colors.text },
                         isSelected && styles.optionSelected,
                       ]}
                     >
                       {item.label}
                     </Text>
-                    {isSelected ? <Text style={{ color: colors.primary }}>✓</Text> : null}
+                    {isSelected ? (
+                      <MaterialCommunityIcons name="check" size={24} color={colors.onPrimaryContainer} />
+                    ) : null}
                   </Pressable>
                 );
               }}
@@ -103,32 +124,40 @@ const styles = StyleSheet.create({
   field: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
+    gap: spacing.sm,
     borderRadius: radius.sm,
-    paddingHorizontal: spacing.sm + 4,
+    paddingHorizontal: spacing.sm + spacing.xs,
     minHeight: 48,
+    overflow: 'hidden',
   },
-  value: { flex: 1, ...typography.body },
-  arrow: typography.body,
+  value: { ...typography.body, flex: 1 },
   error: typography.caption,
-  backdrop: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing.lg,
+  backdrop: { flex: 1, justifyContent: 'flex-end' },
+  sheet: {
+    borderTopLeftRadius: radius.lg,
+    borderTopRightRadius: radius.lg,
+    paddingTop: spacing.sm,
+    maxHeight: '80%',
   },
-  sheet: { borderRadius: radius.md, paddingVertical: spacing.sm, maxHeight: '80%' },
+  handle: {
+    alignSelf: 'center',
+    width: 32,
+    height: 4,
+    borderRadius: radius.pill,
+    marginBottom: spacing.sm,
+  },
   sheetTitle: {
-    ...typography.bodyStrong,
-    paddingHorizontal: spacing.md,
+    ...typography.heading,
+    paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 52,
-    paddingHorizontal: spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    gap: spacing.sm,
+    minHeight: 56,
+    paddingHorizontal: spacing.lg,
   },
-  optionLabel: { flex: 1, ...typography.body },
+  optionLabel: { ...typography.body, flex: 1 },
   optionSelected: { fontWeight: typography.bodyStrong.fontWeight },
 });
