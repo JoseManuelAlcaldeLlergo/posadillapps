@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -38,26 +39,30 @@ export function DateField({ label, value, onChange, error, placeholder, clearabl
           accessibilityRole="button"
           accessibilityLabel={`${label}: ${value ? formatDate(value) : 'sin fecha'}`}
           onPress={open}
+          android_ripple={{ color: colors.ripple }}
           style={[
             styles.field,
             {
               backgroundColor: colors.surface,
-              borderColor: error ? colors.danger : colors.outlineVariant,
+              borderColor: error ? colors.danger : colors.outline,
+              borderWidth: error ? 2 : 1,
             },
           ]}
         >
           <Text style={[styles.value, { color: value ? colors.text : colors.textMuted }]}>
             {value ? formatDate(value) : (placeholder ?? 'dd-mm-aaaa')}
           </Text>
+          <MaterialCommunityIcons name="calendar-month-outline" size={24} color={colors.textMuted} />
         </Pressable>
         {clearable && value ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Quitar ${label}`}
             onPress={() => onChange(null)}
+            android_ripple={{ color: colors.ripple, borderless: true }}
             style={styles.clear}
           >
-            <Text style={[styles.clearText, { color: colors.textMuted }]}>✕</Text>
+            <MaterialCommunityIcons name="close-circle-outline" size={24} color={colors.textMuted} />
           </Pressable>
         ) : null}
       </View>
@@ -72,14 +77,15 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   field: {
     flex: 1,
-    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
     borderRadius: radius.sm,
-    paddingHorizontal: spacing.sm + 4,
+    paddingHorizontal: spacing.sm + spacing.xs,
     minHeight: 48,
-    justifyContent: 'center',
+    overflow: 'hidden',
   },
-  value: typography.body,
-  clear: { width: 40, height: 48, alignItems: 'center', justifyContent: 'center' },
-  clearText: { fontSize: typography.heading.fontSize },
+  value: { ...typography.body, flex: 1 },
+  clear: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   error: typography.caption,
 });

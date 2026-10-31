@@ -205,7 +205,7 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
             setNewFeed(text);
             setFeedError(undefined);
           }}
-          placeholder="Cerdos crecimiento"
+          example="Cerdos crecimiento"
           autoCapitalize="sentences"
           returnKeyType="done"
           onSubmitEditing={onAddFeed}
@@ -243,7 +243,7 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
             setNewTruck(text);
             setTruckError(undefined);
           }}
-          placeholder="1234 BCD"
+          example="1234 BCD"
           autoCapitalize="characters"
           autoCorrect={false}
           returnKeyType="done"

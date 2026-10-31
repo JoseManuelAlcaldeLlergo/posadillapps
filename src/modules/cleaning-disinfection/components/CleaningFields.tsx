@@ -56,7 +56,7 @@ export function CleaningFields({
           label="Unidad productiva"
           value={values.productiveUnit}
           onChangeText={(productiveUnit) => onChange({ productiveUnit })}
-          placeholder="Ovino"
+          example="Ovino"
           autoCapitalize="sentences"
           error={errors.productiveUnit}
         />
@@ -73,7 +73,7 @@ export function CleaningFields({
           label="Producto empleado"
           value={values.productName}
           onChangeText={changeProduct}
-          placeholder="Cal en polvo"
+          example="Cal en polvo"
           autoCapitalize="sentences"
           error={errors.productName}
         />
@@ -97,7 +97,7 @@ export function CleaningFields({
           label="Lugar de aplicación"
           value={values.place}
           onChangeText={(place) => onChange({ place })}
-          placeholder="Naves, suelo y paredes"
+          example="Naves, suelo y paredes"
           autoCapitalize="sentences"
           error={errors.place}
         />
@@ -113,7 +113,7 @@ export function CleaningFields({
         label="Periodo de espera (días)"
         value={values.waitingDays}
         onChangeText={(waitingDays) => onChange({ waitingDays })}
-        placeholder="0"
+        example="0"
         keyboardType="number-pad"
         maxLength={4}
         error={errors.waitingDays}

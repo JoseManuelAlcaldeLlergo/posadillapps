@@ -51,7 +51,7 @@ export function CleaningFields({
           label="Matrícula o número de bastidor"
           value={values.plate}
           onChangeText={changePlate}
-          placeholder="6105 HHR"
+          example="6105 HHR"
           autoCapitalize="characters"
           autoCorrect={false}
           error={errors.plate}
@@ -70,7 +70,7 @@ export function CleaningFields({
           label="Producto empleado"
           value={values.productName}
           onChangeText={(productName) => onChange({ productName })}
-          placeholder="Cipergen"
+          example="Cipergen"
           autoCapitalize="sentences"
           error={errors.productName}
         />
@@ -87,7 +87,7 @@ export function CleaningFields({
           label="Tipo de vehículo"
           value={values.vehicleType}
           onChangeText={(vehicleType) => onChange({ vehicleType })}
-          placeholder="Turismo"
+          example="Turismo"
           autoCapitalize="sentences"
           error={errors.vehicleType}
         />

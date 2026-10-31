@@ -31,7 +31,7 @@ export function YearRangeField({ value, onChange, now = new Date() }: Props) {
             onChangeText={(from) => onChange({ ...value, from })}
             keyboardType="number-pad"
             maxLength={4}
-            placeholder={String(current)}
+            example={String(current)}
           />
         </View>
         <View style={styles.field}>
@@ -41,7 +41,7 @@ export function YearRangeField({ value, onChange, now = new Date() }: Props) {
             onChangeText={(to) => onChange({ ...value, to })}
             keyboardType="number-pad"
             maxLength={4}
-            placeholder={String(current)}
+            example={String(current)}
           />
         </View>
       </View>

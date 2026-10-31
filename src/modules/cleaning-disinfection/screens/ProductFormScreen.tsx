@@ -100,7 +100,7 @@ export default function ProductFormScreen({ productId }: Props) {
         label="Nombre"
         value={values.name}
         onChangeText={(name) => change({ name })}
-        placeholder="Cal en polvo"
+        example="Cal en polvo"
         autoCapitalize="sentences"
         error={errors.name}
       />
@@ -109,7 +109,7 @@ export default function ProductFormScreen({ productId }: Props) {
         label="Periodo de espera por defecto (días)"
         value={values.defaultWaitingDays}
         onChangeText={(defaultWaitingDays) => change({ defaultWaitingDays })}
-        placeholder="0"
+        example="0"
         keyboardType="number-pad"
         maxLength={4}
         error={errors.defaultWaitingDays}
@@ -121,7 +121,7 @@ export default function ProductFormScreen({ productId }: Props) {
           optional
           value={values.defaultPlace}
           onChangeText={(defaultPlace) => change({ defaultPlace })}
-          placeholder="Naves, suelo y paredes"
+          example="Naves, suelo y paredes"
           autoCapitalize="sentences"
         />
         <SuggestionChips

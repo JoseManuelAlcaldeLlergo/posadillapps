@@ -195,7 +195,7 @@ export default function EntryFormScreen({ entryId }: Props) {
           value={values.quantity}
           onChangeText={(text) => set('quantity', text)}
           keyboardType="decimal-pad"
-          placeholder="9.340"
+          example="9.340"
           error={errors.quantity}
         />
         <ChipRow>
@@ -215,7 +215,7 @@ export default function EntryFormScreen({ entryId }: Props) {
           label="Proveedor"
           value={values.supplierName}
           onChangeText={setSupplierName}
-          placeholder="Mezclas del Valle"
+          example="Mezclas del Valle"
           autoCapitalize="words"
           error={errors.supplierName}
         />
@@ -239,7 +239,7 @@ export default function EntryFormScreen({ entryId }: Props) {
           label="Denominación comercial del pienso"
           value={values.feedName}
           onChangeText={(text) => set('feedName', text)}
-          placeholder="Cerdos crecimiento"
+          example="Cerdos crecimiento"
           autoCapitalize="sentences"
           error={errors.feedName}
         />
@@ -265,7 +265,7 @@ export default function EntryFormScreen({ entryId }: Props) {
         optional
         value={values.invoice}
         onChangeText={(text) => set('invoice', text)}
-        placeholder="F2000 525"
+        example="F2000 525"
         autoCapitalize="characters"
       />
 
@@ -275,7 +275,7 @@ export default function EntryFormScreen({ entryId }: Props) {
           optional
           value={values.truckPlate}
           onChangeText={(text) => set('truckPlate', text)}
-          placeholder="1234 BCD"
+          example="1234 BCD"
           autoCapitalize="characters"
           autoCorrect={false}
         />

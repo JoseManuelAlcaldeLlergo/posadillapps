@@ -96,7 +96,7 @@ export default function FarmSettingsScreen() {
             setCode(text);
             setCodeError(undefined);
           }}
-          placeholder="ES000000000000"
+          example="ES000000000000"
           autoCapitalize="characters"
           autoCorrect={false}
           returnKeyType="done"
@@ -142,7 +142,7 @@ export default function FarmSettingsScreen() {
             setUnitName(text);
             setUnitError(undefined);
           }}
-          placeholder="Ovino y porcino"
+          example="Ovino y porcino"
           autoCapitalize="sentences"
           returnKeyType="done"
           onSubmitEditing={onAddUnit}
