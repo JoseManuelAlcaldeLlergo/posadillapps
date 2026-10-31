@@ -50,6 +50,7 @@ export function DateRangeField({ value, onChange, optional, now = new Date() }: 
               key={preset.id}
               label={preset.label}
               selected={selected}
+              check={false}
               onPress={() =>
                 onChange(selected && optional ? { from: null, to: null } : range)
               }

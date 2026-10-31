@@ -4,8 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { db } from '../db';
 import {
+  ActionChip,
   Button,
-  Chip,
   ChipRow,
   confirmAsync,
   radius,
@@ -108,7 +108,12 @@ export default function FarmSettingsScreen() {
             ? 'Los registros nuevos lo usan; los ya guardados conservan el código con el que se crearon.'
             : 'Sin código de explotación no se pueden crear registros que lo necesiten.'}
         </Text>
-        <Button label="Guardar código" onPress={onSaveCode} disabled={!codeChanged} />
+        <Button
+          label="Guardar código"
+          icon="content-save-outline"
+          onPress={onSaveCode}
+          disabled={!codeChanged}
+        />
       </View>
 
       <View style={styles.section}>
@@ -120,17 +125,16 @@ export default function FarmSettingsScreen() {
           <Text style={{ color: colors.textMuted }}>Todavía no hay unidades productivas.</Text>
         ) : (
           units.map((unit, index) => (
-            <View
-              key={unit.id}
-              style={[styles.unit, { borderColor: colors.outlineVariant, backgroundColor: colors.surface }]}
-            >
+            <View key={unit.id} style={[styles.unit, { backgroundColor: colors.surfaceContainer }]}>
               <Text style={[styles.unitName, { color: colors.text }]}>{unit.name}</Text>
               <ChipRow>
-                {index > 0 ? <Chip label="Subir" onPress={() => onMoveUnit(unit, -1)} /> : null}
-                {index < units.length - 1 ? (
-                  <Chip label="Bajar" onPress={() => onMoveUnit(unit, 1)} />
+                {index > 0 ? (
+                  <ActionChip label="Subir" icon="arrow-up" onPress={() => onMoveUnit(unit, -1)} />
                 ) : null}
-                <Chip label="Borrar" onPress={() => onDeleteUnit(unit)} />
+                {index < units.length - 1 ? (
+                  <ActionChip label="Bajar" icon="arrow-down" onPress={() => onMoveUnit(unit, 1)} />
+                ) : null}
+                <ActionChip label="Borrar" icon="delete-outline" onPress={() => onDeleteUnit(unit)} />
               </ChipRow>
             </View>
           ))
@@ -148,7 +152,7 @@ export default function FarmSettingsScreen() {
           onSubmitEditing={onAddUnit}
           error={unitError}
         />
-        <Button label="Añadir unidad productiva" variant="outlined" onPress={onAddUnit} />
+        <Button label="Añadir unidad productiva" icon="plus" variant="tonal" onPress={onAddUnit} />
       </View>
     </Screen>
   );
@@ -159,8 +163,7 @@ const styles = StyleSheet.create({
   title: typography.heading,
   hint: typography.caption,
   unit: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.sm,
   },

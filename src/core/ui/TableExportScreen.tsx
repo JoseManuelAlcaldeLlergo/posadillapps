@@ -1,6 +1,6 @@
 import { Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import { dateRangePresets } from '../dates';
 import { periodFileSuffix } from '../export/format';
@@ -9,8 +9,9 @@ import { printTable, sharePdf, shareXlsx } from '../export/share';
 import type { PeriodType, PeriodValue, TableDefinition } from '../export/types';
 import { Button } from './Button';
 import { DateRangeField, type OptionalDateRange } from './DateRangeField';
+import { Notice } from './Notice';
 import { Screen } from './Screen';
-import { spacing, typography, useThemeColors } from './theme';
+import { spacing } from './theme';
 import { YearRangeField, type YearRangeText } from './YearRangeField';
 
 type Action = 'print' | 'pdf' | 'xlsx';
@@ -54,11 +55,8 @@ export function TableExportScreen<Row, P extends PeriodType = 'dateRange'>({
   countMessage,
   emptyMessage,
 }: Props<Row, P>) {
-  const colors = useThemeColors();
   const periodType: PeriodType = table.periodType ?? 'dateRange';
-  const [dateRange, setDateRange] = useState<OptionalDateRange>(() =>
-    dateRangePresets[0].range(new Date()),
-  );
+  const [dateRange, setDateRange] = useState<OptionalDateRange>(() => dateRangePresets[0].range(new Date()));
   const [yearRange, setYearRange] = useState<YearRangeText>(() => {
     const year = String(new Date().getFullYear());
     return { from: year, to: year };
@@ -68,9 +66,7 @@ export function TableExportScreen<Row, P extends PeriodType = 'dateRange'>({
 
   const resolved = useMemo(() => {
     const input: PeriodInput =
-      periodType === 'yearRange'
-        ? { type: 'yearRange', ...yearRange }
-        : { type: 'dateRange', ...dateRange };
+      periodType === 'yearRange' ? { type: 'yearRange', ...yearRange } : { type: 'dateRange', ...dateRange };
     return resolvePeriod(input);
   }, [periodType, dateRange, yearRange]);
   // resolvePeriod returns the shape that matches the table's period type.
@@ -114,26 +110,27 @@ export function TableExportScreen<Row, P extends PeriodType = 'dateRange'>({
       ) : (
         <DateRangeField value={dateRange} onChange={setDateRange} />
       )}
-      <Text style={[styles.status, { color: invalid ? colors.danger : colors.textMuted }]}>
-        {status}
-      </Text>
+      <Notice tone={invalid ? 'warning' : 'info'} message={status} />
       <View style={styles.buttons}>
         <Button
           label="Imprimir"
+          icon="printer-outline"
           onPress={() => run('print')}
           disabled={disabled}
           loading={busy === 'print'}
         />
         <Button
           label="Compartir PDF"
-          variant="outlined"
+          icon="file-pdf-box"
+          variant="tonal"
           onPress={() => run('pdf')}
           disabled={disabled}
           loading={busy === 'pdf'}
         />
         <Button
           label="Compartir Excel"
-          variant="outlined"
+          icon="microsoft-excel"
+          variant="tonal"
           onPress={() => run('xlsx')}
           disabled={disabled}
           loading={busy === 'xlsx'}
@@ -144,6 +141,5 @@ export function TableExportScreen<Row, P extends PeriodType = 'dateRange'>({
 }
 
 const styles = StyleSheet.create({
-  status: typography.body,
   buttons: { gap: spacing.sm },
 });

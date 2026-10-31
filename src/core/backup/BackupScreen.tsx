@@ -7,7 +7,7 @@ import { db } from '../db';
 import { formatDate } from '../export/format';
 import { describeLastBackup } from '../settings/lastBackup';
 import { getLastBackupAt, setLastBackupAt } from '../settings/repository';
-import { Button, confirmAsync, radius, Screen, spacing, typography, useThemeColors } from '../ui';
+import { Button, confirmAsync, Notice, Screen, spacing, typography, useThemeColors } from '../ui';
 import { createBackup, describeBackup, parseBackupFile, restoreBackup, serializeBackup } from './backup';
 import {
   deleteSafetyCopy,
@@ -143,13 +143,14 @@ export default function BackupScreen({ modules }: Props) {
         <Text style={muted}>{lastBackup}</Text>
         <Button
           label="Crear y compartir copia"
+          icon="share-variant-outline"
           onPress={onCreate}
           loading={busy === 'create'}
           disabled={busy !== null}
         />
         <Text style={muted}>
-          Guárdala en Google Drive o envíatela por correo. La app anota la fecha al cerrar el menú
-          de compartir, pero no puede saber si el archivo llegó a guardarse.
+          Guárdala en Google Drive o envíatela por correo. La app anota la fecha al cerrar el menú de
+          compartir, pero no puede saber si el archivo llegó a guardarse.
         </Text>
       </View>
 
@@ -160,7 +161,8 @@ export default function BackupScreen({ modules }: Props) {
         </Text>
         <Button
           label="Elegir archivo de copia"
-          variant="outlined"
+          icon="file-upload-outline"
+          variant="tonal"
           onPress={onRestore}
           loading={busy === 'restore'}
           disabled={busy !== null}
@@ -168,6 +170,7 @@ export default function BackupScreen({ modules }: Props) {
         {safetyCopy ? (
           <Button
             label="Deshacer la última restauración"
+            icon="undo-variant"
             variant="danger"
             onPress={onUndo}
             loading={busy === 'undo'}
@@ -176,12 +179,7 @@ export default function BackupScreen({ modules }: Props) {
         ) : null}
       </View>
 
-      <View style={[styles.note, { borderColor: colors.outlineVariant }]}>
-        <Text style={muted}>
-          Android también guarda una copia automática en tu cuenta de Google si está activada en
-          Ajustes → Google → Copia de seguridad. Se recupera sola al reinstalar la app.
-        </Text>
-      </View>
+      <Notice message="Android también guarda una copia automática en tu cuenta de Google si está activada en Ajustes → Google → Copia de seguridad. Se recupera sola al reinstalar la app." />
     </Screen>
   );
 }
@@ -189,5 +187,4 @@ export default function BackupScreen({ modules }: Props) {
 const styles = StyleSheet.create({
   section: { gap: spacing.sm },
   heading: typography.heading,
-  note: { borderWidth: 1, borderRadius: radius.sm, padding: spacing.sm + 4, marginTop: spacing.sm },
 });
