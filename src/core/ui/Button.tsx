@@ -31,9 +31,9 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading 
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={filled ? colors.surface : accent} />
+        <ActivityIndicator color={filled ? colors.onPrimary : accent} />
       ) : (
-        <Text style={[styles.label, { color: filled ? colors.surface : accent }]}>{label}</Text>
+        <Text style={[styles.label, { color: filled ? colors.onPrimary : accent }]}>{label}</Text>
       )}
     </Pressable>
   );

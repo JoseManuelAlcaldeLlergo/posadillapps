@@ -20,7 +20,7 @@ export function ListItem({ title, subtitle, badge, onPress }: Props) {
         styles.card,
         {
           backgroundColor: colors.surface,
-          borderColor: colors.border,
+          borderColor: colors.outlineVariant,
           opacity: pressed ? 0.7 : 1,
         },
       ]}

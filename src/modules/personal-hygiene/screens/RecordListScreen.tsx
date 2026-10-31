@@ -109,7 +109,7 @@ export default function RecordListScreen() {
         ) : null}
       </ChipRow>
       {showFilters ? (
-        <View style={[styles.filters, { borderColor: colors.border }]}>
+        <View style={[styles.filters, { borderColor: colors.outlineVariant }]}>
           <View style={styles.filter}>
             <Text style={[styles.filterLabel, { color: colors.text }]}>Año</Text>
             <ChipRow>

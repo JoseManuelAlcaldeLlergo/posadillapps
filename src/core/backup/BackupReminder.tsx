@@ -28,7 +28,7 @@ export function BackupReminder() {
       style={({ pressed }) => [
         styles.banner,
         {
-          borderColor: status.overdue ? colors.danger : colors.border,
+          borderColor: status.overdue ? colors.danger : colors.outlineVariant,
           backgroundColor: colors.surface,
           opacity: pressed ? 0.7 : 1,
         },

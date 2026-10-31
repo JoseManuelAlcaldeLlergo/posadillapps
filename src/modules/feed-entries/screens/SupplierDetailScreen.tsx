@@ -224,7 +224,7 @@ export default function SupplierDetailScreen({ supplierId }: Props) {
       {supplier.trucks.map((truck) => (
         <View
           key={truck.id}
-          style={[styles.truck, { borderColor: colors.border, backgroundColor: colors.surface }]}
+          style={[styles.truck, { borderColor: colors.outlineVariant, backgroundColor: colors.surface }]}
         >
           <Text style={[styles.truckPlate, { color: colors.text }]}>{truck.plate}</Text>
           <Button

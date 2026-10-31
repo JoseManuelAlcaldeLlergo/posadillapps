@@ -1,6 +1,7 @@
 export { AppHeaderTitle } from './AppHeaderTitle';
 export { Button } from './Button';
 export {
+  categoryForRoute,
   categoryLabels,
   categoryOrder,
   groupByCategory,

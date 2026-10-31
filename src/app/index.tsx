@@ -1,7 +1,8 @@
-import { router, type Href } from 'expo-router';
+import { router } from 'expo-router';
 import { SectionList, StyleSheet, Text, View } from 'react-native';
 
 import { BackupReminder } from '@/core/backup/BackupReminder';
+import { settingsEntries, type HomeEntry } from '@/core/settingsEntries';
 import {
   CenteredMessage,
   groupByCategory,
@@ -10,38 +11,8 @@ import {
   spacing,
   typography,
   useThemeColors,
-  type Category,
-  type IconName,
 } from '@/core/ui';
 import { modules } from '@/modules/registry';
-
-type HomeEntry = {
-  id: string;
-  title: string;
-  description?: string;
-  category: Category;
-  icon: IconName;
-  route: Href;
-};
-
-const settingsEntries: HomeEntry[] = [
-  {
-    id: 'farm-settings',
-    title: 'Ajustes de la explotación',
-    description: 'Código de explotación y unidades productivas',
-    category: 'settings',
-    icon: 'barn',
-    route: '/farm-settings',
-  },
-  {
-    id: 'backup',
-    title: 'Copia de seguridad',
-    description: 'Guardar o restaurar todos los datos',
-    category: 'settings',
-    icon: 'backup-restore',
-    route: '/backup',
-  },
-];
 
 const sections = groupByCategory<HomeEntry>([...modules, ...settingsEntries]);
 
@@ -71,7 +42,7 @@ export default function HomeScreen() {
               styles.sectionHeader,
               section.category === 'settings' && [
                 styles.settingsHeader,
-                { borderTopColor: colors.border },
+                { borderTopColor: colors.outlineVariant },
               ],
             ]}
           >

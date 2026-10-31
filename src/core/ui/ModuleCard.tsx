@@ -25,7 +25,7 @@ export function ModuleCard({ title, subtitle, icon, category, onPress }: Props) 
         styles.card,
         {
           backgroundColor: colors.surface,
-          borderColor: colors.border,
+          borderColor: colors.outlineVariant,
           opacity: pressed ? 0.7 : 1,
         },
       ]}

@@ -90,7 +90,7 @@ export default function EntryListScreen() {
         </View>
       ) : null}
       {showFilters ? (
-        <View style={[styles.filters, { borderColor: colors.border }]}>
+        <View style={[styles.filters, { borderColor: colors.outlineVariant }]}>
           <DateRangeField value={range} onChange={setRange} optional />
           {supplierNames.length > 0 ? (
             <View style={styles.supplierFilter}>

@@ -97,7 +97,7 @@ export default function VehicleListScreen() {
         ) : null}
       </ChipRow>
       {showFilters ? (
-        <View style={[styles.filters, { borderColor: colors.border }]}>
+        <View style={[styles.filters, { borderColor: colors.outlineVariant }]}>
           <DateRangeField value={range} onChange={setRange} optional />
           <TextField
             label="Matrícula"

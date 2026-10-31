@@ -26,7 +26,7 @@ export function Checkbox({ label, checked, onChange }: Props) {
           },
         ]}
       >
-        {checked ? <Text style={[styles.tick, { color: colors.surface }]}>✓</Text> : null}
+        {checked ? <Text style={[styles.tick, { color: colors.onPrimary }]}>✓</Text> : null}
       </View>
       <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
     </Pressable>

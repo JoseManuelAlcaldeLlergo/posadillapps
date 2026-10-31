@@ -122,7 +122,7 @@ export default function FarmSettingsScreen() {
           units.map((unit, index) => (
             <View
               key={unit.id}
-              style={[styles.unit, { borderColor: colors.border, backgroundColor: colors.surface }]}
+              style={[styles.unit, { borderColor: colors.outlineVariant, backgroundColor: colors.surface }]}
             >
               <Text style={[styles.unitName, { color: colors.text }]}>{unit.name}</Text>
               <ChipRow>

@@ -42,7 +42,7 @@ export function SelectField<T extends string>({
         onPress={() => setOpen(true)}
         style={[
           styles.field,
-          { backgroundColor: colors.surface, borderColor: error ? colors.danger : colors.border },
+          { backgroundColor: colors.surface, borderColor: error ? colors.danger : colors.outlineVariant },
         ]}
       >
         <Text style={[styles.value, { color: selected ? colors.text : colors.textMuted }]}>
@@ -73,7 +73,7 @@ export function SelectField<T extends string>({
                     onPress={() => choose(item)}
                     style={({ pressed }) => [
                       styles.option,
-                      { borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
+                      { borderColor: colors.outlineVariant, opacity: pressed ? 0.7 : 1 },
                     ]}
                   >
                     <Text

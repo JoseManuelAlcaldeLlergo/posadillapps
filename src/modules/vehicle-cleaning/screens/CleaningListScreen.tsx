@@ -119,7 +119,7 @@ export default function CleaningListScreen() {
         ) : null}
       </ChipRow>
       {showFilters ? (
-        <View style={[styles.filters, { borderColor: colors.border }]}>
+        <View style={[styles.filters, { borderColor: colors.outlineVariant }]}>
           <DateRangeField value={range} onChange={setRange} optional />
           <Text style={[styles.hint, { color: colors.textMuted }]}>
             Las limpiezas periódicas se filtran por los años del rango.
