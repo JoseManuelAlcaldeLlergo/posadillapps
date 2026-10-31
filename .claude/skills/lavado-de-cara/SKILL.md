@@ -53,8 +53,14 @@ ADB="$ANDROID_HOME/platform-tools/adb"; EMU="$ANDROID_HOME/emulator/emulator"
    ```
    Si solo hay AVD raros, pide al usuario que cree uno de teléfono (Android Studio → Device Manager → Pixel 8, API 35).
 2. Instala y abre la app con `npx expo run:android` (en segundo plano: compila y deja Metro corriendo).
-3. **Datos realistas**: en un emulador recién creado la BD está vacía y un listado vacío no muestra los problemas de uno lleno. Pide al usuario que restaure una copia de seguridad (pantalla «Copia de seguridad»); para pasarle el archivo: `"$ADB" push <copia> /sdcard/Download/`. Si no tiene copia, que cree unos cuantos registros por módulo.
-4. Para cada pantalla, pide al usuario que navegue a ella (o navega tú con el esquema `posadillapps://`: `"$ADB" shell am start -a android.intent.action.VIEW -d "posadillapps:///<ruta>"`) y captura en los dos modos:
+3. **Estados vacíos primero**: si la BD de la app aún está vacía (emulador recién creado), captura ahora el listado vacío (`listado-vacio-<modo>.png`). Después de restaurar los datos ya no habrá listados vacíos.
+4. **Datos realistas**: un listado vacío no muestra los problemas de uno lleno. Genera la copia de ejemplo y súbela al emulador:
+   ```sh
+   npm run sample:backup
+   "$ADB" push docs/rediseno/datos-de-ejemplo.json /sdcard/Download/
+   ```
+   La restauración usa el selector de archivos del sistema, así que pide al usuario que la haga en la app: **Copia de seguridad → Restaurar → Descargas → `datos-de-ejemplo.json`**, y espera a que confirme. Reemplaza todos los datos de la app del emulador, lo que no importa porque son de prueba. Nunca la subas a un móvil real con datos de la explotación.
+5. Para cada pantalla, pide al usuario que navegue a ella (o navega tú con el esquema `posadillapps://`: `"$ADB" shell am start -a android.intent.action.VIEW -d "posadillapps:///<ruta>"`) y captura en los dos modos:
    ```sh
    "$ADB" shell cmd uimode night no
    "$ADB" exec-out screencap -p > docs/rediseno/antes/<tipo>-claro.png
