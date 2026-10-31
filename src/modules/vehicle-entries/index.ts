@@ -6,6 +6,7 @@ export { normalizePlate, plateKey } from './plates';
 export {
   deleteAutomaticVisit,
   linkAutomaticVisit,
+  listUsedPlates,
   type AutomaticVisitInput,
 } from './repository';
 /** Only to declare foreign keys to visits; use the functions above to change them. */

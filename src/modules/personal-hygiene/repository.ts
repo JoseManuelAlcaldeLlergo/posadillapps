@@ -3,6 +3,7 @@ import { and, asc, desc, eq, gte, lte, sql, type SQL } from 'drizzle-orm';
 import type { SyncDatabase } from '@/core/db/types';
 import type { YearRange } from '@/core/export/types';
 import { nameKey } from '@/core/text';
+import { newYearRows, previewYearRows, type YearPreview as CoreYearPreview } from '@/core/yearGeneration';
 
 import { hygieneRecords, hygieneTemplates, type HygieneRecord, type HygieneTemplate } from './schema';
 import { fillYear, toTemplateText } from './templates';
@@ -32,11 +33,7 @@ export type RecordFilters = {
 /** A row proposed when generating a year, before the user reviews it. */
 export type GeneratedRow = RecordFields & { templateId: number; position: number };
 
-export type YearPreview = {
-  rows: GeneratedRow[];
-  /** Active templates that already have a row in the year. */
-  skipped: HygieneTemplate[];
-};
+export type YearPreview = CoreYearPreview<HygieneTemplate, GeneratedRow>;
 
 const updatedNow = sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`;
 
@@ -175,25 +172,21 @@ export function deleteRecord(db: SyncDatabase, id: number): void {
 
 /** Row of each active template for `year`, skipping templates that already have one. */
 export function previewYear(db: SyncDatabase, year: number): YearPreview {
-  const existing = templatesWithRows(db, year);
-  const preview: YearPreview = { rows: [], skipped: [] };
-  for (const template of listActiveTemplates(db)) {
-    if (existing.has(template.id)) {
-      preview.skipped.push(template);
-    } else {
-      preview.rows.push({
-        templateId: template.id,
-        position: template.sortOrder,
-        productiveUnit: template.productiveUnit,
-        action: template.action,
-        place: template.place,
-        result: fillYear(template.result, year),
-        correctiveMeasures: template.correctiveMeasures,
-        dateText: fillYear(template.dateText, year),
-      });
-    }
-  }
-  return preview;
+  return previewYearRows(
+    listActiveTemplates(db),
+    templatesWithRows(db, year),
+    (template) => template.id,
+    (template) => ({
+      templateId: template.id,
+      position: template.sortOrder,
+      productiveUnit: template.productiveUnit,
+      action: template.action,
+      place: template.place,
+      result: fillYear(template.result, year),
+      correctiveMeasures: template.correctiveMeasures,
+      dateText: fillYear(template.dateText, year),
+    }),
+  );
 }
 
 /**
@@ -208,12 +201,7 @@ export function saveGeneratedYear(
   rows: readonly GeneratedRow[],
 ): { inserted: number; skipped: number } {
   return db.transaction((tx) => {
-    const taken = templatesWithRows(tx, year);
-    const toInsert = rows.filter((row) => {
-      if (taken.has(row.templateId)) return false;
-      taken.add(row.templateId);
-      return true;
-    });
+    const toInsert = newYearRows(rows, templatesWithRows(tx, year), (row) => row.templateId);
     if (toInsert.length > 0) {
       tx.insert(hygieneRecords)
         .values(toInsert.map((row) => ({ ...row, year, farmCode })))
