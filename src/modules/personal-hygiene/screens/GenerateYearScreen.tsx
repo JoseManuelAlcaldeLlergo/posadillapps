@@ -4,7 +4,7 @@ import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { parseYear } from '@/core/dates';
 import { db } from '@/core/db';
-import { getFarmCode } from '@/core/farm';
+import { FarmCodeRequired, getFarmCode } from '@/core/farm';
 import {
   Button,
   CenteredMessage,
@@ -17,7 +17,6 @@ import {
   useThemeColors,
 } from '@/core/ui';
 
-import { FarmCodeRequired } from '../components/FarmCodeRequired';
 import { HygieneFields } from '../components/HygieneFields';
 import { previewYear, saveGeneratedYear, type GeneratedRow, type YearPreview } from '../repository';
 import { loadSuggestions, type Suggestions } from '../suggestions';

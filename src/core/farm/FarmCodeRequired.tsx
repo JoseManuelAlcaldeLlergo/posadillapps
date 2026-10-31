@@ -1,15 +1,15 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { Button, CenteredMessage, spacing } from '@/core/ui';
+import { Button, CenteredMessage, spacing } from '../ui';
 
-/** Shown instead of a form that creates rows while the farm code is not set. */
+/** Shown instead of a form that creates records while the farm code is not set. */
 export function FarmCodeRequired() {
   return (
     <View style={styles.root}>
       <CenteredMessage
         title="Falta el código de explotación"
-        message="Configúralo en Ajustes de la explotación antes de crear filas."
+        message="Configúralo en Ajustes de la explotación antes de crear registros."
       />
       <Button label="Ir a Ajustes de la explotación" onPress={() => router.push('/farm-settings')} />
     </View>
