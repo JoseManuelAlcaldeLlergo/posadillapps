@@ -17,7 +17,7 @@ Toma como referencia el módulo `src/modules/feed-entries/` (entradas de aliment
     - `repository.ts`: CRUD y consulta por rango de fechas
     - `tableDefinition.ts`: columnas, encabezados en MAYÚSCULAS como en el papel, formateadores, orientación de página
     - `module.ts`: su `AppModule` con `id`, `title`, `description`, `category`, `icon`, `route` y `backup` (los campos `category` e `icon` son obligatorios)
-    - `screens/`: listado, formulario, exportación (reutilizando componentes y tokens de `src/core/ui/`, sin colores ni tamaños literales)
+    - `screens/`: listado, formulario, exportación, siguiendo los patrones de la sección 7 de `guia-diseno` (listado con `Fab`, `ListToolbar`, `groupByMonth`, `DateBadge` y `EmptyState` con el icono del módulo; formulario con «Guardar» en el `footer` de `Screen` y borrar con `dangerText`; exportación con `TableExportScreen`), reutilizando componentes y tokens de `src/core/ui/`, sin colores ni tamaños literales
 4. Registra el módulo en `src/modules/registry.ts` (el orden dentro de su categoría es el de la lista) y añádelo a la tabla «Icono y categoría de cada módulo» de `.claude/skills/guia-diseno/SKILL.md`.
 5. No modifiques `src/core/export/`. Si el motor no cubre algo, para y propón el cambio genérico al usuario.
 6. Añade tests: repositorio (rango de fechas) y `tableDefinition` (formato de cada columna).
