@@ -47,6 +47,7 @@
     "android": "expo run:android",
     "lint": "expo lint",
     "test": "jest",
+    "sample:backup": "mkdir -p docs/rediseno && SAMPLE_BACKUP_OUT=docs/rediseno/datos-de-ejemplo.json jest scripts/sample-data",
     "db:generate": "drizzle-kit generate",
     "build:apk": "expo prebuild --platform android && cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a"
   },
