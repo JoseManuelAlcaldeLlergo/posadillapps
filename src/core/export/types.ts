@@ -21,6 +21,9 @@ export type ColumnDefinition<Row> = {
 
 export type PageOrientation = 'portrait' | 'landscape';
 
+/** Height of data rows, in points (about 13 mm), that leaves room to sign by hand. */
+export const SIGNATURE_ROW_HEIGHT = 36;
+
 /** Separator between day, month and year when showing dates. */
 export type DateSeparator = '-' | '/';
 

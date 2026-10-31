@@ -1,4 +1,4 @@
-import { findByName, nameKey, normalizeName } from '../text';
+import { findByName, mergeSuggestions, nameKey, normalizeName } from '../text';
 
 describe('text', () => {
   it('normalizes spaces', () => {
@@ -18,5 +18,11 @@ describe('text', () => {
     expect(findByName(list, 'mezclas del valle')?.id).toBe(1);
     expect(findByName(list, 'Otro')).toBeUndefined();
     expect(findByName(list, '  ')).toBeUndefined();
+  });
+
+  it('merges presets first with used texts not already present', () => {
+    expect(
+      mergeSuggestions(['A diario', 'Semanalmente'], ['a diario', 'Cada  15 días', '', 'Cada 15 días']),
+    ).toEqual(['A diario', 'Semanalmente', 'Cada 15 días']);
   });
 });

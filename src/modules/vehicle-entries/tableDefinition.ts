@@ -1,5 +1,6 @@
 import type { DateRange } from '@/core/dates';
 import type { SyncDatabase } from '@/core/db/types';
+import { compareRegularsFirst, regularOrDateCell } from '@/core/export/regulars';
 import type { TableDefinition } from '@/core/export/types';
 
 import { countVisitsInRange, listActiveRegulars, listVisitsInRange } from './repository';
@@ -34,8 +35,7 @@ export const vehicleEntriesTable: TableDefinition<VehicleExportRow> = {
       header: 'FECHA',
       width: 16,
       align: 'center',
-      value: (row) =>
-        row.kind === 'regular' ? { kind: 'text', value: row.frequency } : { kind: 'date', iso: row.date },
+      value: regularOrDateCell,
     },
     {
       key: 'reason',
@@ -51,11 +51,7 @@ export const vehicleEntriesTable: TableDefinition<VehicleExportRow> = {
     },
   ],
   // Regular vehicles first, in creation order; then visits by date.
-  compareRows: (a, b) => {
-    if (a.kind !== b.kind) return a.kind === 'regular' ? -1 : 1;
-    if (a.kind === 'visit' && b.kind === 'visit') return a.date.localeCompare(b.date) || a.id - b.id;
-    return a.id - b.id;
-  },
+  compareRows: compareRegularsFirst,
 };
 
 /** Every active regular vehicle plus the visits in the range. */

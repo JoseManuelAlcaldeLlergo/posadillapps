@@ -8,10 +8,9 @@ import {
   CenteredMessage,
   Checkbox,
   confirmAsync,
+  FrequencyField,
   Screen,
   spacing,
-  SuggestionChips,
-  TextField,
 } from '@/core/ui';
 
 import { VehicleFields, type VehicleFieldValues } from '../components/VehicleFields';
@@ -122,22 +121,12 @@ export default function RegularFormScreen({ regularId }: Props) {
         autofill={!isEdit}
       />
 
-      <View style={styles.group}>
-        <TextField
-          label="Frecuencia"
-          value={values.frequency}
-          onChangeText={(frequency) => change({ frequency })}
-          placeholder="A diario"
-          autoCapitalize="sentences"
-          error={errors.frequency}
-        />
-        <SuggestionChips
-          items={frequencies.map((text) => ({ id: text, name: text }))}
-          query={values.frequency}
-          label="Sugerencias"
-          onSelect={(item) => change({ frequency: item.name })}
-        />
-      </View>
+      <FrequencyField
+        value={values.frequency}
+        onChange={(frequency) => change({ frequency })}
+        suggestions={frequencies}
+        error={errors.frequency}
+      />
 
       <Checkbox
         label="Activo (sale en las exportaciones)"
@@ -154,6 +143,5 @@ export default function RegularFormScreen({ regularId }: Props) {
 }
 
 const styles = StyleSheet.create({
-  group: { gap: spacing.sm },
   buttons: { gap: spacing.sm, marginTop: spacing.sm },
 });

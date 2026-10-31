@@ -4,7 +4,7 @@ import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { parseYear } from '@/core/dates';
 import { db } from '@/core/db';
-import { getFarmCode } from '@/core/farm';
+import { FarmCodeRequired, getFarmCode } from '@/core/farm';
 import { nameKey } from '@/core/text';
 import {
   Button,
@@ -19,7 +19,6 @@ import {
   useThemeColors,
 } from '@/core/ui';
 
-import { FarmCodeRequired } from '../components/FarmCodeRequired';
 import { HygieneFields } from '../components/HygieneFields';
 import { createRecord, deleteRecord, getRecord, updateRecord } from '../repository';
 import type { HygieneTemplate } from '../schema';

@@ -2,10 +2,11 @@ import { and, asc, desc, eq, gte, isNotNull, like, lte, sql, type SQL } from 'dr
 
 import type { DateRange } from '@/core/dates';
 import type { SyncDatabase } from '@/core/db/types';
+import { mergeSuggestions } from '@/core/text';
 
 import { normalizePlate, plateKey } from './plates';
 import { vehicleRegulars, vehicleVisits, type VehicleRegular, type VehicleVisit } from './schema';
-import { mergeSuggestions, PRESET_FREQUENCIES, PRESET_REASONS } from './suggestions';
+import { PRESET_FREQUENCIES, PRESET_REASONS } from './suggestions';
 import type { VehicleType } from './vehicleTypes';
 
 export type VehicleFilters = {

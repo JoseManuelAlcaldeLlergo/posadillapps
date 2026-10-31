@@ -1,5 +1,5 @@
 import { normalizePlate, plateKey } from '../plates';
-import { mergeSuggestions, PRESET_REASONS } from '../suggestions';
+import { PRESET_REASONS } from '../suggestions';
 
 describe('normalizePlate', () => {
   it('uppercases and collapses spaces without validating the format', () => {
@@ -18,13 +18,7 @@ describe('plateKey', () => {
   });
 });
 
-describe('mergeSuggestions', () => {
-  it('keeps presets first and adds used texts not already present', () => {
-    expect(
-      mergeSuggestions(['A diario', 'Semanalmente'], ['a diario', 'Cada  15 días', '', 'Cada 15 días']),
-    ).toEqual(['A diario', 'Semanalmente', 'Cada 15 días']);
-  });
-
+describe('suggestions', () => {
   it('includes the preset reasons of the paper form', () => {
     expect(PRESET_REASONS).toContain('Transporte de pienso');
     expect(PRESET_REASONS).toHaveLength(6);

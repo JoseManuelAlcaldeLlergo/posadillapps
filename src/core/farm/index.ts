@@ -1,5 +1,6 @@
 /** Farm settings shared by every module (farm code, productive units). */
 export { farmBackupParticipant, type FarmBackupData } from './backup';
+export { FarmCodeRequired } from './FarmCodeRequired';
 export {
   addProductiveUnit,
   deleteProductiveUnit,

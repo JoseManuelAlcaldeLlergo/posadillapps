@@ -1,4 +1,4 @@
-import type { TableDefinition } from '@/core/export/types';
+import { SIGNATURE_ROW_HEIGHT, type TableDefinition } from '@/core/export/types';
 
 import type { HygieneRecord } from './schema';
 
@@ -15,9 +15,6 @@ export type HygieneExportRow = Pick<
   | 'correctiveMeasures'
   | 'dateText'
 >;
-
-/** Height of data rows, in points (about 13 mm), to sign by hand. */
-export const SIGNATURE_ROW_HEIGHT = 36;
 
 /** Same columns, order and title as the paper form, with an empty signature column. */
 export const personalHygieneTable: TableDefinition<HygieneExportRow, 'yearRange'> = {

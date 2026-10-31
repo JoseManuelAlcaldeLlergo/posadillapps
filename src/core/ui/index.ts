@@ -5,6 +5,7 @@ export { Chip, ChipRow } from './Chip';
 export { confirmAsync } from './confirm';
 export { DateField } from './DateField';
 export { DateRangeField, type OptionalDateRange } from './DateRangeField';
+export { FrequencyField } from './FrequencyField';
 export { ListItem } from './ListItem';
 export { Screen } from './Screen';
 export { SelectField, type SelectOption } from './SelectField';

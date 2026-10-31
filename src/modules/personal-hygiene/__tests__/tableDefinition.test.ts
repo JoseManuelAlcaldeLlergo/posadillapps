@@ -1,9 +1,10 @@
 import { buildPdfHtml } from '@/core/export/pdf';
 import { buildXlsxBase64 } from '@/core/export/excel';
 import { formatCell } from '@/core/export/format';
+import { SIGNATURE_ROW_HEIGHT } from '@/core/export/types';
 import * as XLSX from 'xlsx';
 
-import { personalHygieneTable, SIGNATURE_ROW_HEIGHT, type HygieneExportRow } from '../tableDefinition';
+import { personalHygieneTable, type HygieneExportRow } from '../tableDefinition';
 
 const row: HygieneExportRow = {
   id: 1,
