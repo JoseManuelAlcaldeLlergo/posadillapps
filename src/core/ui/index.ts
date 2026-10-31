@@ -1,3 +1,4 @@
+export { AppHeaderTitle } from './AppHeaderTitle';
 export { Button } from './Button';
 export {
   categoryLabels,

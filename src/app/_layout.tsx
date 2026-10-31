@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { DatabaseProvider } from '@/core/db';
-import { useThemeColors } from '@/core/ui';
+import { AppHeaderTitle, useThemeColors } from '@/core/ui';
 
 export default function RootLayout() {
   const colors = useThemeColors();
@@ -16,7 +16,13 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: colors.background },
         }}
       >
-        <Stack.Screen name="index" options={{ title: 'PosadillApps' }} />
+        <Stack.Screen
+          name="index"
+          options={{
+            title: 'PosadillApps',
+            headerTitle: ({ children }) => <AppHeaderTitle title={children} />,
+          }}
+        />
       </Stack>
     </DatabaseProvider>
   );
