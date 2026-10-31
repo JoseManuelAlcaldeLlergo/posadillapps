@@ -150,7 +150,7 @@ export function YearGenerationScreen<Source, Row, Values>({
         <CenteredMessage title={empty.title} message={empty.message} />
         <Button
           label={empty.actionLabel}
-          variant="secondary"
+          variant="outlined"
           onPress={() => router.push(empty.actionRoute)}
         />
       </View>

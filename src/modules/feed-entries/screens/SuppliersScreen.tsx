@@ -64,7 +64,7 @@ export default function SuppliersScreen() {
               onSubmitEditing={onAdd}
               error={error}
             />
-            <Button label="Añadir proveedor" variant="secondary" onPress={onAdd} />
+            <Button label="Añadir proveedor" variant="outlined" onPress={onAdd} />
           </View>
         }
         renderItem={({ item }) => (

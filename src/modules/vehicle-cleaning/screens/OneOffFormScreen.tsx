@@ -132,7 +132,7 @@ export default function OneOffFormScreen({ oneOffId, repeatId }: Props) {
         <Button label={isEdit ? 'Guardar cambios' : 'Guardar'} onPress={onSave} />
         {isEdit ? (
           <>
-            <Button label="Repetir con fecha de hoy" variant="secondary" onPress={onRepeat} />
+            <Button label="Repetir con fecha de hoy" variant="outlined" onPress={onRepeat} />
             <Button label="Borrar limpieza" variant="danger" onPress={onDelete} />
           </>
         ) : null}

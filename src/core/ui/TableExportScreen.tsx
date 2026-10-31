@@ -126,14 +126,14 @@ export function TableExportScreen<Row, P extends PeriodType = 'dateRange'>({
         />
         <Button
           label="Compartir PDF"
-          variant="secondary"
+          variant="outlined"
           onPress={() => run('pdf')}
           disabled={disabled}
           loading={busy === 'pdf'}
         />
         <Button
           label="Compartir Excel"
-          variant="secondary"
+          variant="outlined"
           onPress={() => run('xlsx')}
           disabled={disabled}
           loading={busy === 'xlsx'}

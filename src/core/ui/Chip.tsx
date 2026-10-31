@@ -1,7 +1,12 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import type { IconName } from './categories';
 import { radius, spacing, typography, useThemeColors } from './theme';
+
+/** Chips look 40 tall; this brings the touch area to 48. */
+const HIT_SLOP = { top: 4, bottom: 4 };
 
 type Props = {
   label: string;
@@ -9,6 +14,7 @@ type Props = {
   onPress: () => void;
 };
 
+/** Choice or filter: selected ones are tonal and show a check. */
 export function Chip({ label, selected, onPress }: Props) {
   const colors = useThemeColors();
   return (
@@ -16,16 +22,47 @@ export function Chip({ label, selected, onPress }: Props) {
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={onPress}
-      style={({ pressed }) => [
+      hitSlop={HIT_SLOP}
+      android_ripple={{ color: colors.ripple }}
+      style={[
         styles.chip,
-        {
-          backgroundColor: selected ? colors.primary : colors.surface,
-          borderColor: selected ? colors.primary : colors.outlineVariant,
-          opacity: pressed ? 0.7 : 1,
-        },
+        selected
+          ? { backgroundColor: colors.primaryContainer, borderColor: colors.primaryContainer }
+          : { backgroundColor: colors.surface, borderColor: colors.outlineVariant },
       ]}
     >
-      <Text style={[styles.label, { color: selected ? colors.onPrimary : colors.text }]}>{label}</Text>
+      {selected ? (
+        <MaterialCommunityIcons name="check" size={18} color={colors.onPrimaryContainer} />
+      ) : null}
+      <Text style={[styles.label, { color: selected ? colors.onPrimaryContainer : colors.text }]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+type ActionProps = {
+  label: string;
+  icon: IconName;
+  onPress: () => void;
+};
+
+/** Secondary action of a screen, e.g. Exportar or Proveedores. */
+export function ActionChip({ label, icon, onPress }: ActionProps) {
+  const colors = useThemeColors();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      hitSlop={HIT_SLOP}
+      android_ripple={{ color: colors.ripple }}
+      style={[
+        styles.chip,
+        { backgroundColor: colors.surfaceContainerHigh, borderColor: colors.surfaceContainerHigh },
+      ]}
+    >
+      <MaterialCommunityIcons name={icon} size={18} color={colors.primary} />
+      <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -37,11 +74,14 @@ export function ChipRow({ children }: { children: ReactNode }) {
 const styles = StyleSheet.create({
   chip: {
     minHeight: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
     borderRadius: radius.pill,
     borderWidth: 1,
     paddingHorizontal: spacing.md,
-    justifyContent: 'center',
+    overflow: 'hidden',
   },
-  label: typography.body,
+  label: { ...typography.body, flexShrink: 1 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });

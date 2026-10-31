@@ -1,52 +1,86 @@
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { radius, spacing, typography, useThemeColors } from './theme';
+import { radius, spacing, typography, useThemeColors, type ThemeColors } from './theme';
+
+type BadgeTone = 'neutral' | 'primary' | 'warning';
 
 type Props = {
   title: string;
+  /**
+   * Lines under the title. The first one is the most important and goes in
+   * the main text color; the rest are muted.
+   */
+  lines?: (string | null | undefined)[];
+  /** Single muted line under the title; use `lines` for more. */
   subtitle?: string;
+  /** Shown on the left, e.g. a `DateBadge`. */
+  leading?: ReactNode;
   /** Short tag next to the title, e.g. `Automática`. */
   badge?: string;
+  badgeTone?: BadgeTone;
   onPress?: () => void;
 };
 
-export function ListItem({ title, subtitle, badge, onPress }: Props) {
+function badgeColor(colors: ThemeColors, tone: BadgeTone): string {
+  if (tone === 'primary') return colors.primary;
+  if (tone === 'warning') return colors.warning;
+  return colors.textMuted;
+}
+
+export function ListItem({
+  title,
+  lines,
+  subtitle,
+  leading,
+  badge,
+  badgeTone = 'neutral',
+  onPress,
+}: Props) {
   const colors = useThemeColors();
+  const shown = (lines ?? [subtitle]).filter((line): line is string => Boolean(line));
+  const tagColor = badgeColor(colors, badgeTone);
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.card,
-        {
-          backgroundColor: colors.surface,
-          borderColor: colors.outlineVariant,
-          opacity: pressed ? 0.7 : 1,
-        },
-      ]}
+      android_ripple={{ color: colors.ripple }}
+      style={[styles.card, { backgroundColor: colors.surfaceContainer }]}
     >
-      <View style={styles.titleRow}>
-        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
-        {badge ? (
-          <Text style={[styles.badge, { color: colors.primary, borderColor: colors.primary }]}>
-            {badge}
+      {leading}
+      <View style={styles.texts}>
+        <View style={styles.titleRow}>
+          <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+          {badge ? (
+            <Text style={[styles.badge, { color: tagColor, borderColor: tagColor }]}>{badge}</Text>
+          ) : null}
+        </View>
+        {shown.map((line, i) => (
+          <Text
+            key={i}
+            style={[
+              i === 0 && lines ? typography.body : typography.caption,
+              { color: i === 0 && lines ? colors.text : colors.textMuted },
+            ]}
+          >
+            {line}
           </Text>
-        ) : null}
+        ))}
       </View>
-      {subtitle ? (
-        <Text style={[styles.subtitle, { color: colors.textMuted }]}>{subtitle}</Text>
-      ) : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
-    gap: spacing.xs,
+    overflow: 'hidden',
   },
+  texts: { flex: 1, gap: spacing.xxs },
   titleRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: spacing.sm },
   title: { ...typography.heading, flexShrink: 1 },
   badge: {
@@ -56,5 +90,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xxs,
   },
-  subtitle: typography.caption,
 });

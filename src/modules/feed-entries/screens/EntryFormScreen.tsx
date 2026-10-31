@@ -309,7 +309,7 @@ export default function EntryFormScreen({ entryId }: Props) {
         ) : (
           <Button
             label="Guardar y añadir otro de la misma factura"
-            variant="secondary"
+            variant="outlined"
             onPress={onSaveAndAddAnother}
           />
         )}
